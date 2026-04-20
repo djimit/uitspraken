@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+  targetNamespace="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:ecli="https://e-justice.europa.eu/ecli"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:tr="http://tuchtrecht.overheid.nl/"
+  xmlns:eu="http://publications.europa.eu/celex/" xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:bwb="bwb-dl" xmlns:cvdr="http://decentrale.regelgeving.overheid.nl/cvdr/"
+  xmlns:rs="http://www.rechtspraak.nl/schema/rechtspraak-1.0" xmlns:psi="http://psi.rechtspraak.nl/"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xs:attributeGroup name="label">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Het atribuut label heeft een FIXED waarde: "Vervangt".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="Vervangt"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label13">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Attribuut label heeft een FIXED waarde: "Procedure".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="Procedure"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label14">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Attribuut label heeft een FIXED waarde: "Zaaknr.".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="Zaaknr"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label1">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Attribuut label heeft een FIXED waarde: "Instantie".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="Instantie"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label2">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>het label bevat de benaming voor de contributor. Dit is afhankelijk van het instantietype.
+rechtbank = "rechter"
+gerechtshof en Centrale Raad van beroep = "raadsheer"
+Raad van State = "Staatsraad"
+Hoge Raad = "Raadsheer"
+Parket bij de Hoge Raad = "AG-PG"</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label3">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Voor conclusies wordt het label "Datum genomen" gebruikt, voor uitspraken "Uitspraakdatum".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="Uitspraakdatum"/>
+          <xs:enumeration value="Datum genomen"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label4">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Attribuut label heeft een FIXED waarde: "Publicatiedatum".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="Publicatiedatum"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label5">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Attribuut label heeft een FIXED waarde: "van".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="van"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label6">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Attribuut label heeft een FIXED waarde: "tot".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="tot"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label7">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Attribuut label heeft een FIXED waarde: "Periode".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="Periode"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label8">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Attribuut label heeft een FIXED waarde: "Zittingsplaats".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="Zittingsplaats"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label9">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Attribuut label heeft een FIXED waarde: "Rechtsgebied".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="Rechtsgebied"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label10">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Attribuut label heeft een FIXED waarde: "Formele relatie".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="Formele relatie"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label11">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Attribuut label is een enumeratie van twee mogelijke waarden: "Wetsverwijzing" of "Verwijzing".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="Wetsverwijzing"/>
+          <xs:enumeration value="Verwijzing"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="label12">
+    <xs:attribute name="label" use="required" form="qualified">
+      <xs:annotation>
+        <xs:documentation>Attribuut label heeft een FIXED waarde: "Vindplaatsen".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="Vindplaatsen"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+</xs:schema>

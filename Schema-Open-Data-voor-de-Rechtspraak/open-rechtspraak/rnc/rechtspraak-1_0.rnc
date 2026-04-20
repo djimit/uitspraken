@@ -1,0 +1,716 @@
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace xlink = "http://www.w3.org/1999/xlink"
+namespace bwb = "bwb-dl"
+namespace ecli = "https://e-justice.europa.eu/ecli"
+default namespace = "http://www.rechtspraak.nl/schema/rechtspraak-1.0"
+
+
+## Schema: rechtspraak-1_0.rnc
+## Versie: 1.0
+## Datum creatie: 2010-12-01
+
+## Basis-schema voor jurisprudentie: uitspraken, conclusies, inhoudsindicaties en
+## samenvattingen. Kan worden uitgebreid of gevarieerd door vanuit een nieuw schema deze te importeren
+## en definities in dit schema aan te vullen of the herzien.
+
+## Gebaseerd op: Docbook 5.0, subset gebruikt en enige lokale aanpassingen waaronder specifiek
+## benoemde root-elementen.
+## Documentatie Docbook: http://www.docbook.org/tdg5/en/html/docbook.html
+
+start = uitspraak | samenvatting | inhoudsindicatie | conclusie
+
+content.volledig =
+    ## Contentdefinitie (model groups) voor algemeen gebruik.
+    ## De groepen worden 'getrapt' ingelezen. content.volledig is het meest uitgebreide model.
+    content.eenvoudig | table | informaltable | mediaobject | paragroup
+    
+content.eenvoudig =
+    ## Contentdefinitie (model groups) voor algemeen gebruik.
+    ## De groepen worden 'getrapt' ingelezen. content.eenvoudig is het meest gebruikte model.
+    content.simpel | lists | bridgehead | blockquote
+    
+content.simpel =
+    ## Contentdefinitie (model groups) voor algemeen gebruik.
+    ## De groepen worden 'getrapt' ingelezen. content.simpel is het eenvoudigste model.
+    para | parablock | footnote
+
+content.inlines =
+    ## Definitie inlines voor alle situaties.
+    emphasis | footnote-ref | superscript | subscript | nn |
+    quote | foreignphrase | inlinemediaobject | link
+
+content.link =
+    ## Voor het element link geldt een afwijkende set toegestane elementen. 
+    emphasis | footnote-ref | superscript | subscript | nn |
+    quote | foreignphrase | inlinemediaobject
+
+attlist.root =
+    ## Standaard herbruikbare lijst attributen voor mogelijke root-elementen.
+    attribute id { xsd:anyURI },
+    attribute ljn { text }?,
+    attribute status { text }?,
+    attlist.language
+
+extend.attlist.legacy = empty
+
+## Standaard herbruikbare lijst taalaanduidingen volgens ISO-639
+attlist.language =
+    ## Taalaanduiding als de eenvoudige ISO-639 (twee-letter codes) afkortingen. Lijst zal in ieder geval alle  officiële Europese talen moeten bevatten.
+    attribute lang { 
+    ## Bulgaars
+      "bg" | 
+    ##Tsjechisch
+      "cs" | 
+    ##Deens		
+      "da" | 
+    ##Engels
+      "en" | 
+    ##Duits
+      "de" | 
+    ##Ests
+      "et" | 
+    ##Grieks
+      "el" | 
+    ##Spaans
+      "es" | 
+    ##Frans
+      "fr" | 
+    ##Iers
+      "ga" | 
+    ##Italiaans
+      "it" | 
+    ##Lets
+      "lv" | 
+    ##Litouws
+      "lt" | 
+    ##Hongaars
+      "hu" | 
+    ##Maltees
+      "mt" | 
+    ##Nederlands
+      "nl" | 
+    ##Pools
+      "pl" | 
+    ##Portugees
+      "pt" | 
+    ##Roemeens
+      "ro" | 
+    ##Slowaaks
+      "sk" | 
+    ##Sloveens
+      "sl" | 
+    ##Fins
+      "fi" | 
+    ##Zweeds
+      "sv" 
+    }
+
+bridgehead = 
+    ## Een 'tussenkop' gebruikt in tekst wanneer er geen hierarchisch niveau
+    ## binnen een tekst is bedoeld of is vast te stellen.
+    element bridgehead {
+      (text | nr | content.inlines)*, attlist.emphasis?
+    }
+	
+uitspraak = 
+    ## Start-element voor een uitspraak.
+    element uitspraak {
+      uitspraak.info?, (section | content.volledig)+, ondertekening?, attlist.root, extend.attlist.legacy 
+    }
+
+conclusie = 
+    ## Start-element voor een conclusie.
+    element conclusie {
+      conclusie.info?, (section | content.volledig)+, ondertekening?, attlist.root, extend.attlist.legacy 
+    }
+	
+samenvatting = 
+    ## Start-element voor een samenvatting
+    element samenvatting {
+      (content.eenvoudig)+, attlist.root
+    }
+	
+ondertekening = 
+    ## Het laatste deel van een uitspraak-document (heeft geen 'title')
+    element ondertekening {
+     (content.volledig)+
+   }
+
+uitspraak.info = 
+    ## Toevoeging info elementen voor een uitspraak-document. Feitelijk het voorwerk voor een uitspraak.
+    element uitspraak.info {
+      info
+    }
+	
+conclusie.info = 
+    ## Toevoeging info-elementen voor een conclusie-document. Feitelijk het voorwerk voor een conclusie.
+    element conclusie.info {
+      info
+    }
+
+info = 
+    ## Het info-element bevat de metadata zoals dit in het document is opgenomen (gepubliceerde tekst).
+      (instantie | afdeling | uitspraaksoort | zaaknr | plaats | partij | uitspraakdatum | content.volledig )+
+	
+inhoudsindicatie = 
+    ## Start-element voor een inhoudsindicatie
+    element inhoudsindicatie {
+      (content.simpel)+, attlist.root
+    }
+
+uitspraaksoort = 
+    ## uitspraaksoort = "vonnis", "arrest" etc.
+    element uitspraaksoort {
+      text
+    }
+
+plaats = 
+    ## Plaats instantie of plaats zitting.
+    element plaats {
+      text
+    }
+
+afdeling = 
+    ## De afdeling binnen de instantie.
+    element afdeling {
+      (para | parablock)+
+    }
+
+instantie = 
+    ## De rechsprekende instantie (Rechtbank, Hof of Hoge Raad).
+    element instantie {
+      (para | parablock)+
+    }
+
+partij = 
+    ##Verzamel-element waarin 'partijen' in een rechtszaak of geding worden genoemd.
+    ##Feitelijk een gespecialiseerde 'para'.
+    element partij {
+      (para | parablock | lists)+
+    }
+	
+uitspraakdatum = 
+    ## De datum waarop de uitspraak is gedaan.
+    element uitspraakdatum {
+      text
+    }
+    
+zaaknr = 
+    ## Intern registratienummer van een zaak bij een instantie. Ook wel 'rolnr'.
+    element zaaknr {
+      text
+    }
+
+    ## Geanonimiseerd tekstdeel. Als tekst in het element wordt de oorspronkelijke tekst opgenomen. In het attribuut
+    ## 'anonymous' wordt de geanonimiseerde term opgenomen, indien de tekst geanonimiseerd moet worden.
+    nn = 
+      element nn {
+        text, attlist.nn
+      }
+
+attlist.nn =
+    ## Attribuut 'anonymous' bevat de 'partij-rol' van de genoemde te anonimiseren partij of
+    ## anderszins betrokkene.
+    attribute anonymous { text }
+
+emphasis = 
+    ## Lijst met vaste waarden verwijderd ivm vrijheid voor anonimiseren.
+    ## Nadruk op een tekstfragment (vet of cursief), waarbij de betekenis van de betreffende tekst niet
+    ## kan worden vastgesteld. (display only).
+    element emphasis {
+      (text | content.inlines)*, attlist.emphasis
+    }
+
+attlist.emphasis =
+    ## Attribuut met de aanduiding hoe een element met nadruk moet worden getoond.
+    ## Het is mogelijk om meer dan 1 waarde te selecteren als een met spaties gescheiden
+    ## lijst (bv. "bold itelic").
+    attribute role {list {
+      ("italic" | "bold" | "underline" | "strike-through" | "double-underline" |
+      "smallcaps" | "caps")+ }
+    }
+
+footnote = 
+    ## Tekst van een voetnoot. De voetnoten mogen overal worden geplaatst op het nieveau van een alinea
+    ## (para) tekst, maar niet binnen een para.
+    element footnote {
+      (para | lists)+, attlist.footnote
+    }
+
+attlist.footnote =
+    ## Voor voetnoten worden in de tekst referenties geplaatst die verwijzen naar
+    ## de voetnoottekst. De representatie van de noot in de tekst wordt als 'label'
+    ## opgenomen in de markering voor voetnoottekst.
+    attribute id { xsd:ID },
+    attribute label { text }
+
+footnote-ref = 
+    ## Referentie vanuit tekst naar de voetnoot door middel van een ID en een IDREF. XML parsers staan
+    ## niet toe dat met een IDREF wordt verwezen naar een niet bestaand ID.
+    element footnote-ref {
+      empty, attlist.footnote-ref
+    }
+
+attlist.footnote-ref =
+    ## Attribuut met de waarde van het ID van de voetnoot waarnaar wordt verwezen.
+    attribute linkend { xsd:IDREF }
+
+link = 
+    ## Een referentie naar een andere tekst (document), te gebruiken als een hyperlink.
+    element link {
+      (text | content.link)*, attlist.link
+    }
+
+attlist.referenties =
+    ## Attributen voor het vastleggen van referenties in de tekst (oa elementen link en blockquote).
+    ## href bevat het adres (of identifier) waar de verwezen tekst is te vinden. In het 'role' attribuut
+    ## kan worden vastgelegd wat de aard van de link is (voorbeeld: 'wetgeving' of 'uitspraak').
+    ## Het attibuut 'label' bevat de tekst die getoont kan worden indien de link tag zelf geen tekst
+    ## omvat.
+    (
+      attribute xlink:href { xsd:anyURI } |
+      attribute bwb:link { xsd:anyURI } |
+      attribute ecli:link { xsd:anyURI }
+    )
+
+attlist.referentielabels =
+    ## Attributen voor het vastleggen van referenties in de tekst (oa elementen link en blockquote).
+    ## href bevat het adres (of identifier) waar de verwezen tekst is te vinden. In het 'role' attribuut
+    ## kan worden vastgelegd wat de aard van de link is (voorbeeld: 'wetgeving' of 'uitspraak').
+    ## Het attibuut 'label' bevat de tekst die getoont kan worden indien de link tag zelf geen tekst
+    ## omvat.
+    attribute xlink:role { xsd:anyURI }?,
+    attribute xlink:label { text }?,
+    attribute xlink:title { text }?
+
+attlist.link =
+    attlist.referenties,
+    attlist.referentielabels
+    
+attlist.quotes =
+    attlist.referenties?,
+    attlist.referentielabels
+
+foreignphrase = 
+    ## een woord of frase in een andere taal dan de taal waarin het document is gesteld.
+    element foreignphrase {
+      text, attlist.language
+    }
+
+superscript = 
+   ## Hoog geplaatste tekst zoals bv in '2 m2' (vierkante meter).
+   element superscript {
+    text
+   }
+
+subscript = 
+    ## Laag geplaatste tekst zoals in 'H2O' (formule voor water).
+    element subscript {
+      text
+    }
+
+para = 
+    ## Een alinea tekst. Het meest gebruikte element in een document.
+    element para { 
+      (text | content.inlines)* 
+    }
+
+parablock = 
+    ## Een groepering alinea's. Wanneer opeenvolgende alinea's NIET worden gescheiden door een
+    ## 'witregel', dan kunnen deze worden gegroepeerd in een parablock.
+    element parablock {
+      para+
+    }
+
+paragroup = 
+    ## Wanneer alinea's expliciet genummerd zijn (zoals bij voorbeeld binnen de overwegingen van een
+    ## uitspraak). Het toegevoegde element nr kan worden gebruikt om het nummer te markeren. Bovendien
+    ## kan een ID aan de groep worden toegevoegd zodat direct naar een overweging kan worden gelinkt.
+    ## De waarde voor het attribuut ID kan op de volgende vaste wijze worden opgebouwd: Voor een
+    ## alineagroup met nr: '2.4' binnen overwegingen wordt het ID "OVERWEGING_2_4".
+    element paragroup {
+      (nr?, (content.volledig)+), attlist.paragroup
+    }
+    
+attlist.paragroup =
+    attribute id { xsd:ID }?,
+    attlist.language?
+
+nr = 
+    ## Een nummering van bv. een lijst of alinea's die automatisch genummerd kunnen of mogen worden.
+    element nr {
+      text
+    }
+
+blockquote = 
+    ## Een tekstdeel dat afkomstig is uit een ander document of publicatie. Met de link-attributen kan
+    ## worden aangegeven uit welk document deze geciteerde tekst afkomstig is.
+    element blockquote { 
+      (content.eenvoudig | informaltable | mediaobject)+, attlist.quotes?
+    }
+
+section = 
+    ## Een hierarchische indeling van een document (vergelijkbaar met: hoofdstuk of paragraaf).
+    ## Een nadere aanduiding van het type kan worden gegeven in het attribuut 'role' (bijvoorbeeld:
+    ## 'overwegingen' of 'beslissing'.
+    element section {
+      title, (section | content.volledig)+, attlist.section
+    }
+    
+attlist.section = 
+    ## Het type van de section (of paragraaf), is niet verplicht, alleen wanneer
+    ## de inhoud een section voldoet aan de beschrijving toe te kennen.
+    ## NB. Indien dit niet het geval is of wanneer dit niet met zekerheid is vast te stellen
+    ## dan SVP niet gebruiken.
+    attribute role { "beslissing" | "overwegingen" | "procesverloop" }?,
+
+## Indien een section (of paragraaf) een benaming heeft voor een eventuele nummering
+## dan kan hier dit label worden opgegeven. Voorbeelden: "Hoofdstuk", "Paragraaf", "§".
+    attribute label { text }?
+
+lists =
+    ## Een voorziening om in een keer alle lijsttypen in een modelgroup in te voegen.
+    orderedlist | itemizedlist
+
+
+inlinemediaobject = 
+    ## Afbeeldingen, audio of videofragmenten kunnen inline (in lopende tekst) worden ingevoegd.
+    ## Een mediaobject kan meerdere ...objecten bevatten. De volgorde waarin deze zijn opgenomen bepaald
+    ## welke van deze objecten de voorkeur heeft (de eerst genoemde). Voor nadere regels zie de
+    ## online documentatie van docbook. http://www.docbook.org/tdg5/en/html/docbook.html
+    element inlinemediaobject {
+      alt?, (audioobject | imageobject | textobject | videoobject)+
+    }
+
+mediaobject = 
+    ## Afbeeldingen, audio of videofragmenten kunnen worden ingevoegd als vrijstaand blok.
+    ## Een mediaobject kan meerdere ...objecten bevatten. De volgorde waarin deze zijn opgenomen bepaald
+    ## welke van deze objecten de voorkeur heeft (de eerst genoemde). Voor nadere regels zie de
+    ## online documentatie van docbook. http://www.docbook.org/tdg5/en/html/docbook.html
+    element mediaobject {
+      alt?, (audioobject | imageobject | textobject | videoobject)+, caption?
+    }
+
+alt = 
+    ## Alternatieve tekst voor wanneer een object niet kan worden getoond in een applicatie. Vgl. "alt"
+    ## attribuut in html.
+    element alt {
+      text
+    }
+
+caption = 
+    ## Een bij- of onderschrift.
+    element caption {
+      text
+    }
+
+audioobject =
+    element audioobject {
+      audiodata
+    }
+
+audiodata = 
+    element audiodata {
+      empty, attlist.audiodata
+    }
+
+attlist.audiodata =
+    attribute fileref { xsd:anyURI },
+    attribute format {
+      "audio/basic" |
+      "audio/mp4" | 
+      "audio/mpeg" | 
+      "audio/ogg" |
+      "audio/vorbis" | 
+      "audio/x-ms-wma" | 
+      "audio/x-ms-wax" | 
+      "audio/vnd.rn-realaudio" | 
+      "audio/vnd.wave"
+    }
+
+imageobject = 
+    element imageobject {
+      imagedata
+    }
+
+imagedata = 
+    element imagedata {
+      empty, attlist.imagedata
+    }
+
+attlist.imagedata =
+    content.object-attributes,
+    [a:defaultValue = "image/jpeg"] attribute format { 
+      "image/gif" | 
+      "image/jpeg" | 
+      "image/png" | 
+      "image/svg+xml" | 
+      "image/tiff" |
+      "application/pdf" |
+      "application/postscript"
+    }?
+
+content.object-attributes =
+    attribute align { "center" | "left" | "right" },
+    attribute contentdepth {xsd:integer }?,
+    attribute contentwidth { xsd:integer }?,
+    attribute depth {xsd:integer },
+    attribute width { xsd:integer },
+    attribute fileref { xsd:anyURI },
+    attribute scale { xsd:positiveInteger }?,
+    attribute scalefit { "0" | "1" }?,
+    attribute valign { "bottom" | "middle" | "top" }?
+
+textobject =
+    element textobject {
+      ( textdata | (content.simpel)+ )
+    }
+	
+textdata =
+    element textdata {
+      empty, attlist.textdata
+    }
+	
+attlist.textdata =
+    attribute fileref { xsd:anyURI },
+    [a:defaultValue = "UTF-8"]
+    attribute encoding {
+      "UTF-8" | 
+      "UTF-16" | 
+      "ISO-8859-1" | 
+      "US-ASCII" | 
+      "windows-1252" }?,
+    [a:defaultValue = "text/xml"]
+    attribute format {
+      "text/html" |
+      "application/xhtml+xml" |
+      "text/plain" |
+      "text/xml"
+    }?
+
+videoobject =
+    element videoobject {
+      videodata
+    }
+
+videodata = 
+    element videodata {
+      empty, attlist.videodata
+    }
+
+attlist.videodata =
+    content.object-attributes,
+    attribute format { 
+      "video/mpeg" | 
+      "video/mp4" | 
+      "video/ogg" | 
+      "video/quicktime" | 
+      "video/webm" | 
+      "video/x-ms-wmv" | 
+      "application/x-shockwave-flash"
+    }
+
+orderedlist = 
+    ## Een genummerde lijst of opsomming.
+    element orderedlist {
+      title?, (listitem | lists)+, attlist.ordered
+    }
+
+itemizedlist = 
+    ## Een ongenummerde lijst of opsomming. Het voorloop-symbool (bullet) kan
+    ## worden aangegeven in het attribuut "mark".
+    element itemizedlist {
+      title?, (listitem | lists)+, attlist.itemized
+    }
+
+attlist.itemized =
+    ## voorloop-symbool (bullet) voor ongenummerde lijsten kan worden aangegeven in dit attribuut.
+    attribute mark { text }
+
+attlist.ordered =
+    ## Nummering van een lijst begint weer bij 1, of doornummeren vorige lijst.
+    attribute continuation { "continues" | "restarts" }?,
+
+    ## Indien een lijst met een willekeurig nummer begint...
+    attribute startingnumber { xsd:positiveInteger }?,
+
+    ## Indien nummering 'hierarchisch' is (als in "1.2.3.") 
+    attribute inheritnum { "inherit" | "ignore" }?,
+
+    ## Type nummering (als: "1", "A", "a", "I", "i").
+    ## Indien de nummering exliciet wordt opgenomen in een nr-element voor een listitem dan moet
+    ## de waarde "none" worden gekozen, anders wordt de lijst bij presentatie ook nog automatisch genummerd met het
+    ## geselecteerde type nummering. 
+    attribute numeration { 
+    ## Arabische nummering - 1. 2, 3 etc.
+      "arabic" | 
+    ## Alfabetische nummering met hoofdletters (kapitalen) - A, B, C, etc.
+      "upperalpha" | 
+    ## Alfabetische nummering met kleine leters - a, b, c, etc.
+      "loweralpha" | 
+    ## Romeinse nummering met hoofdletters (kapitalen) - I, II, III, etc.
+      "upperroman" | 
+    ## Romeinse nummering met kleine letters - i, ii, iii, etc.
+      "lowerroman" | 
+    ## Geen automatische nummering - gebruik het nr-element van de listitem voor de nummers.
+      "none" }
+
+listitem = 
+    ## Een onderdeel van een lijst.
+    ## NB. Alleen indien het een orderedlist betreft met numeration="none" dan mag het element 'nr' worden gebruikt.
+    element listitem {
+      nr?, (para | lists | blockquote)+
+    }
+
+title = 
+    ## Een titel voor bv een section, table of list.
+    element title {
+      nr?, (text | content.inlines)*
+    }
+
+quote = 
+    ## Een aanhaling of citaat in lopende tekst. Het is mogelijk om met attributen aan te geven wat de bron van de quote is.
+    element quote {
+      (text | content.inlines)*, attlist.quotes?
+    }
+
+# Start definities voor tabellen.
+# Twee soorten tabellen zijn beschikbaar ('informaltable' is de default).
+
+informaltable = 
+    ## Een tabel zonder titel (titel verboden).
+    ## Voor documentatie zie: http://www.docbook.org/tdg5/en/html/docbook.html
+    element informaltable {
+      tgroup+, attlist.table
+    }
+	
+table = 
+    element table {
+    ## Een tabel met een verplichte titel.
+    ## Voor documentatie zie: http://www.docbook.org/tdg5/en/html/docbook.html.
+      title, tgroup+, attlist.table
+    }
+    
+attlist.table =
+    align?,
+    valign?,
+    attribute border {"1" | "0"}?
+
+tgroup =
+    element tgroup {
+      colspec*, spanspec*, thead?, tfoot?, tbody, attlist.tgroup
+    }
+    
+attlist.tgroup =
+    [a:defaultValue = "left"]
+    attribute align { "center" | "char" | "left" | "right" }?,
+    attribute char { text }?,
+    attribute charoff { xsd:decimal}?,
+    attribute cols { xsd:positiveInteger }?,
+    [a:defaultValue = "0"]
+    attribute colsep { "1" | "0" }?,
+    [a:defaultValue = "1"]
+    attribute rowsep { "1" | "0" }?,
+    attribute tgroupstyle { text }?
+
+colspec =
+    element colspec {
+      empty, attlist.colspec
+    }
+    
+attlist.colspec =
+    [a:defaultValue = "left"]
+    attribute align { "center" | "char" | "left" | "right" }?,
+    attribute char { text }?,
+    attribute charoff { xsd:decimal}?,
+    attribute colname { text }?,
+    attribute colnum { xsd:positiveInteger }?,
+    [a:defaultValue = "0"]
+    attribute colsep { "1" | "0" }?,
+    attribute colwidth { text }?,
+    [a:defaultValue = "1"]
+    attribute rowsep { "1" | "0" }?
+
+spanspec = 
+    element spanspec {
+      empty, attlist.spanspec
+    }
+    
+attlist.spanspec =
+    align,
+    attribute char { text }?,
+    attribute charoff { xsd:decimal}?,
+    colsep,
+    rowsep,
+    attribute nameend { text },
+    attribute namest { text },
+    attribute spanname { text }
+
+align =
+    attribute align { "center" | "char" | "left" | "right" }?
+    
+colsep =
+    attribute colsep { "1" | "0" }?
+
+thead =
+    element thead {
+      row+, attlist.thead
+    }
+    
+attlist.thead =
+    valign,
+    align
+
+tfoot =
+    element tfoot {
+      row+, attlist.tfoot
+    }
+    
+attlist.tfoot =
+    valign,
+    align
+
+tbody = 
+    element tbody {
+      row+, attlist.tbody
+    }
+    
+attlist.tbody =
+    valign,
+    align
+
+row =
+    element row {
+      entry+, attlist.row
+    }
+    
+attlist.row =
+    valign,
+    rowsep
+
+valign =
+    attribute valign { "top" | "bottom" | "middle" }?
+
+rowsep =
+    attribute rowsep { "1" | "0" }?
+	
+entry =
+    element entry {
+      (para | mediaobject)*, attlist.entry
+    }
+
+attlist.entry =
+    valign,
+    rowsep,
+    colsep,
+    align,
+    attribute char { text }?,
+    attribute charoff { xsd:decimal}?,
+    attribute morerows { xsd:integer }?,
+    attribute rotate { "1" | "0" }?,
+    attribute namest { text }?,
+    attribute nameend { text }?,
+    attribute colname { text }?,
+    attribute spanname {text }?
+
+	

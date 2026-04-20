@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns:owms="http://standaarden.overheid.nl/owms/terms/" xmlns:cvdr="http://decentrale.regelgeving.overheid.nl/cvdr/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:eu="http://publications.europa.eu/celex/" xmlns:psi="http://psi.rechtspraak.nl/" xmlns:tr="http://tuchtrecht.overheid.nl/" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ecli="https://e-justice.europa.eu/ecli" xmlns:bwb="bwb-dl" xmlns:dcterms="http://purl.org/dc/terms/" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start combine="choice">
+    <ref name="open-metadata"/>
+  </start>
+  <define name="attlist.language" combine="choice">
+    <a:documentation>Versienr: 1.0
+Auteur: Aad Kamsteeg
+Organisatie: Spir-it
+Datum: 2012-08-20
+Laatste wijziging: 2012-08-20
+
+Bijzonderheden:
+Voorkeursnamen voor display van de informatiecomponenten (elementen) worden gegeven als attributen rdfs:label. De taal van de voorkeurslabelslabels is altijd Nederlands (nl).
+Root element voor de open-metadata distributie. Daar waar mogelijk wordt aangesloten bij de standaarden:
+- RDF (Resource Description Framework) Als container-element;
+- OWMS (Overheids Web Metadata Standaard);
+- DC (Dublin Core);
+- DCTERMS (Dublin Core Terms).
+- PSI (Published Subject Identifier). Identifier in de context van de Rechtspraak ("http://psi.rechtspraak.nl/").
+Indien voor begrippen een PSI (Published Subject Identifier) voorhanden is dan zal deze worden opgenomen als een rdf:resource attribuut.
+All metadata not based on a scheme or a fixed format (dates) must have a language indication (rdf:language="nl").</a:documentation>
+    <attribute name="rdf:language">
+      <value>nl</value>
+    </attribute>
+  </define>
+  <define name="attlist.resource">
+    <attribute name="resourceIdentifier">
+      <data type="anyURI"/>
+    </attribute>
+  </define>
+  <define name="attlist.resource.refs">
+    <optional>
+      <attribute name="eu:resourceIdentifier">
+        <a:documentation>Verwijzing (hyperlink) naar een publicatie in de CELEX-collectie van de EU.</a:documentation>
+        <data type="anyURI"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="ecli:resourceIdentifier">
+        <a:documentation>Verwijzing (hyperlink) naar een publicatie in het ECLI register (Jurisprudentie).</a:documentation>
+        <data type="anyURI"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="bwb:resourceIdentifier">
+        <a:documentation>Verwijzing (hyperlink) naar een publicatie in de BWB-collectie (Nederlandse regelgeving).</a:documentation>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="cvdr:resourceIdentifier">
+        <a:documentation>Verwijzing (hyperlink) naar een publicatie in de CVDR-collectie (Lagere regelgeving).</a:documentation>
+        <data type="anyURI"/>
+      </attribute>
+    </optional>
+  </define>
+  <define name="attlist.description">
+    <attribute name="rdf:about">
+      <a:documentation>rdf:about bevat de ECLI waar deze metadata betrekking op heeft.</a:documentation>
+      <data type="anyURI"/>
+    </attribute>
+  </define>
+  <define name="open-metadata">
+    <element name="rdf:RDF">
+      <a:documentation>Dit metadata schema is gebaseerd op de richtlijnen van de Nederlandse Overheid zoals vastgelegd in de OWMS (Overheids Web Metadata Standaard 4.0) en op de
+voorwaarden van de EU met betrekking tot het publiceren van gegeven voor een "ECLI-register". Beide richtlijnen maken gebruik van de DCMI (Dublin Core) standaard (dcterms)</a:documentation>
+      <ref name="rdfDescription"/>
+      <optional>
+        <ref name="rdfDescription"/>
+      </optional>
+    </element>
+  </define>
+  <define name="rdfDescription">
+    <element name="rdf:Description">
+      <a:documentation>Er zijn mogelijk twee elementen rdf:Description aanwezieg. De eerste is feitelijk het ECLI-register.
+De tweede rdf:Description bevat de aanvullende metadata voor een gepubliceerde tekst.
+Deze is te herkennen aan het attribuut "rdf:about" waarin de document identifier wordt gegeven als een URI.</a:documentation>
+      <ref name="metadataCore"/>
+      <zeroOrMore>
+        <ref name="dcReplaces"/>
+      </zeroOrMore>
+      <optional>
+        <ref name="dcIsReplacedBy"/>
+      </optional>
+      <optional>
+        <ref name="dcCreator"/>
+      </optional>
+      <zeroOrMore>
+        <ref name="dcContributor"/>
+      </zeroOrMore>
+      <optional>
+        <ref name="dcDate"/>
+      </optional>
+      <zeroOrMore>
+        <ref name="psiZaaknummer"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="dcAlternative"/>
+      </zeroOrMore>
+      <optional>
+        <ref name="dcType"/>
+      </optional>
+      <optional>
+        <ref name="psiProcedure"/>
+      </optional>
+      <optional>
+        <ref name="dcCoverage"/>
+      </optional>
+      <optional>
+        <ref name="dcTemporal"/>
+      </optional>
+      <optional>
+        <ref name="dcSpatial"/>
+      </optional>
+      <zeroOrMore>
+        <ref name="dcSubject"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="dcRelation"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="dcReferences"/>
+      </zeroOrMore>
+      <optional>
+        <ref name="dcHasVersion"/>
+      </optional>
+      <optional>
+        <!-- dcisVersionOf?, -->
+        <ref name="dcTitle"/>
+      </optional>
+      <optional>
+        <ref name="dcAbstract"/>
+      </optional>
+      <optional>
+        <ref name="attlist.description"/>
+      </optional>
+    </element>
+  </define>
+  <define name="metadataCore">
+    <a:documentation>metadataCore bevat de elementen die zowel voor het ECLI-register als voor het document worden gebruikt.</a:documentation>
+    <ref name="dcIdentifier"/>
+    <ref name="dcFormat"/>
+    <ref name="dcAccessRights"/>
+    <ref name="dcModified"/>
+    <ref name="dcIssued"/>
+    <optional>
+      <ref name="dcPublisher"/>
+    </optional>
+    <ref name="dcLanguage"/>
+  </define>
+  <define name="dcIdentifier">
+    <element name="dcterms:identifier">
+      <a:documentation>De identifier van het document. De identifier is de URL voor de ECLI op rectspraak.nl.
+Noot: - voor rechtspraak.nl maakt het niet uit of een document (tekst) beschikbaar is of alleen een registratie in het ecli-register.</a:documentation>
+      <data type="anyURI"/>
+    </element>
+  </define>
+  <define name="dcReplaces">
+    <element name="dcterms:replaces">
+      <a:documentation>Verwijst naar een ECLI dat in het verleden ten onrechte aan de betreffende uitspraak is toegekend en is komen te vervallen, of naar het in het verleden toegekende LJN.
+Wanneer een uitspraak of conclusie ooit een LJN heeft gehad, dan wordt het betreffende LJN voor compatibiliteit nog wel vermeld (maar niet meer actief gebruikt)</a:documentation>
+      <text/>
+      <attribute name="rdfs:label">
+        <a:documentation>Het atribuut label heeft een FIXED waarde: "Vervangt".</a:documentation>
+        <value>Vervangt</value>
+      </attribute>
+    </element>
+  </define>
+  <define name="dcIsReplacedBy">
+    <element name="dcterms:isReplacedBy">
+      <a:documentation>isReplacedBy geeft de vervangende identifier voor vervallen ECLI's (en LJNs-index?).</a:documentation>
+      <data type="anyURI"/>
+    </element>
+  </define>
+  <define name="dcFormat">
+    <element name="dcterms:format">
+      <a:documentation>Het element format heeft een FIXED waarde: "text/xml".</a:documentation>
+      <text/>
+    </element>
+  </define>
+  <define name="dcTitle">
+    <element name="dcterms:title">
+      <a:documentation>Uitspraken en conclusies hebben geen titel, de titel wordt daarom samengesteld uit de volgende componenten:
+- ECLI + ", "
+- Uitspraakdatum + " - "
+- Instantie</a:documentation>
+      <text/>
+      <ref name="attlist.language"/>
+    </element>
+  </define>
+  <define name="dcAlternative">
+    <element name="dcterms:alternative">
+      <a:documentation>Sommige uitspraken krijgen een aparte titel waarmee aan de uitspraak wordt gerefereerd. Meestal betreft het een spraakmakende zaak.</a:documentation>
+      <text/>
+      <ref name="attlist.language"/>
+    </element>
+  </define>
+  <define name="dcType">
+    <element name="dcterms:type">
+      <a:documentation>Het type van het beschreven object. De PSI van het type is aangegeven in het attribuut resourceIdentifier met de volgende mogelijke waarden:
+- psi:gerechtelijkProduct#uitspraak
+- psi:gerechtelijkProduct#conclusie
+Het element type bevat de leesbare vormen: "Uitspraak" of "Conclusie".</a:documentation>
+      <choice>
+        <value>Uitspraak</value>
+        <value>Conclusie</value>
+      </choice>
+      <ref name="attlist.resource"/>
+      <ref name="attlist.language"/>
+    </element>
+  </define>
+  <define name="psiProcedure">
+    <element name="psi:procedure">
+      <a:documentation>De procedure om tot een uitspraak te komen. Voorbeeld: "Eerste aanleg - meervoudig" of "Kort geding". Alleen de bijzondere procedures worden vermeld.
+Een identifier in de namespace "psi.rechtspraak.nl/procedure#" kan worden toegevoegd als resourceIdentifier.</a:documentation>
+      <text/>
+      <ref name="attlist.resource"/>
+      <attribute name="rdfs:label">
+        <a:documentation>Attribuut label heeft een FIXED waarde: "Procedure".</a:documentation>
+        <value>Procedure</value>
+      </attribute>
+      <ref name="attlist.language"/>
+    </element>
+  </define>
+  <define name="psiZaaknummer">
+    <element name="psi:zaaknummer">
+      <a:documentation>Zaak- of rolnummer zoals door de instantie gebruikt. Indien sprake is van meer dan één zaaknummer dan worden deze gescheiden door een ";" (puntkomma) opgenomen.</a:documentation>
+      <text/>
+      <attribute name="rdfs:label">
+        <a:documentation>Attribuut label heeft een FIXED waarde: "Zaaknr.".</a:documentation>
+        <value>Zaaknr</value>
+      </attribute>
+    </element>
+  </define>
+  <define name="dcLanguage">
+    <element name="dcterms:language">
+      <a:documentation>De taal waarin het object (document) gesteld is.
+Het element language heeft een vaste waarde: "nl".</a:documentation>
+      <value>nl</value>
+    </element>
+  </define>
+  <define name="dcCoverage">
+    <element name="dcterms:coverage">
+      <a:documentation>Landcode van het gebied bestreken door de justitiele organisatie. coverage heeft een FIXED waarde 'NL'</a:documentation>
+      <value>NL</value>
+    </element>
+  </define>
+  <define name="dcAccessRights">
+    <element name="dcterms:accessRights">
+      <a:documentation>dcterms:accessRights heeft twee mogelijke waarden: 'public' indien op rechtspraak.nl of op tuchtrecht.overheid.nl gepubliceerd; 'private' indien niet publiek gepubliceerd.</a:documentation>
+      <choice>
+        <value>public</value>
+        <value>private</value>
+      </choice>
+    </element>
+  </define>
+  <define name="dcPublisher">
+    <element name="dcterms:publisher">
+      <a:documentation>Publisher heeft de waarde: "Raad voor de Rechtspraak".</a:documentation>
+      <text/>
+      <optional>
+        <ref name="attlist.resource">
+          <a:documentation>Attribuut scheme heeft een FIXED waarde: "OVERHEID.RechterlijkeMacht".
+Attribuut resourceIndentifier FIXED waarde: "http://www.rechtspraak.nl".</a:documentation>
+        </ref>
+      </optional>
+    </element>
+  </define>
+  <define name="dcAbstract">
+    <element name="dcterms:abstract">
+      <a:documentation>Samenvatting van de uitspraak. Indien de tekst is gepubliceerd is op rechtspraak.nl dan kan hiervoor de inhoud van de 'inhoudsindicatie' worden gebruikt.
+Een verwijzing naar de inhoudsindicatie is meer op zijn plaats. Deze verwijzing kan als een vaste xpath worden opgenomen indien de combinatie van metadata en tekst wordt geleverd.</a:documentation>
+      <text/>
+      <optional>
+        <attribute name="resourceIdentifier">
+          <a:documentation>Attribuut resourceIdentifier heeft een FIXED waarde: "../rs:inhoudsindicatie".</a:documentation>
+          <value>../../rs:inhoudsindicatie</value>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+  <define name="dcCreator">
+    <element name="dcterms:creator">
+      <a:documentation>De eindverantwoordelijke instantie voor de uitspraak / conclusie. De instantie met het wettelijk mandaat om het document op te stellen.</a:documentation>
+      <text/>
+      <ref name="attlist.creator"/>
+      <optional>
+        <attribute name="psi:afdeling">
+          <a:documentation>Indien de afdeling relevant en bekend is (hoofdafdeling, sub-afdeling, voorzitter/president) dan worden deze gegevens als tekst opgenomen.</a:documentation>
+        </attribute>
+      </optional>
+      <attribute name="rdfs:label">
+        <a:documentation>Attribuut label heeft een FIXED waarde: "Instantie".</a:documentation>
+        <value>Instantie</value>
+      </attribute>
+    </element>
+  </define>
+  <define name="attlist.creator">
+    <optional>
+      <attribute name="scheme">
+        <a:documentation>De gerechtelijke instantie die de uispraak heeft gedaan, de conclusie heeft opgesteld of vervaardigd.
+Het attribuut "scheme" geeft aan wat de afkomst is van de gehanteerde termen.
+Attribuut scheme heeft een FIXED waarde: "overheid.RechterlijkeMacht".</a:documentation>
+        <choice>
+          <value>overheid.RechterlijkeMacht</value>
+          <value>psi.rechtspraak</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <ref name="attlist.resource">
+        <a:documentation>Het attribuut resourceIdentifier bevat de betreffende identifier in de vorm van een URI.</a:documentation>
+      </ref>
+    </optional>
+    <optional>
+      <attribute name="psi:resourceIdentifier">
+        <data type="anyURI"/>
+      </attribute>
+    </optional>
+  </define>
+  <define name="dcContributor">
+    <element name="dcterms:contributor">
+      <a:documentation>contributor bevat de namen van rechters, raadsheren, staatsraden voor uitspraken of de ag-pg voor conclusies</a:documentation>
+      <text/>
+      <attribute name="rdfs:label">
+        <a:documentation>het label bevat de benaming voor de contributor. Dit is afhankelijk van het instantietype.
+rechtbank = "rechter"
+gerechtshof en Centrale Raad van beroep = "raadsheer"
+Raad van State = "Staatsraad"
+Hoge Raad = "Raadsheer"
+Parket bij de Hoge Raad = "AG-PG"</a:documentation>
+      </attribute>
+    </element>
+  </define>
+  <define name="dcDate">
+    <element name="dcterms:date">
+      <a:documentation>Datum waarop de uitspraak is gedaan en vrijgegeven. Let op, dit is niet hetzelfde als de publicatiedatum (dcterms:available).</a:documentation>
+      <data type="date"/>
+      <attribute name="rdfs:label" a:defaultValue="Uitspraakdatum">
+        <a:documentation>Voor conclusies wordt het label "Datum genomen" gebruikt, voor uitspraken "Uitspraakdatum".</a:documentation>
+        <choice>
+          <value>Uitspraakdatum</value>
+          <value>Datum genomen</value>
+        </choice>
+      </attribute>
+    </element>
+  </define>
+  <define name="dcModified">
+    <element name="dcterms:modified">
+      <a:documentation>De datum waarop de gegevens voor het laatst zijn aangepast. Indien geen aanpassingen, dan is dit dezelfde datum als de dcterms:date.</a:documentation>
+      <data type="dateTime"/>
+    </element>
+  </define>
+  <define name="dcIssued">
+    <element name="dcterms:issued">
+      <a:documentation>NB Uitsluitend wanneer de tekst beschikbaar is op rechtspraak.nl!
+De datum waarop het document is gepubliceerd (op rechtspraak.nl).</a:documentation>
+      <data type="date"/>
+      <attribute name="rdfs:label">
+        <a:documentation>Attribuut label heeft een FIXED waarde: "Publicatiedatum".</a:documentation>
+        <value>Publicatiedatum</value>
+      </attribute>
+    </element>
+  </define>
+  <define name="dcTemporal">
+    <element name="dcterms:temporal">
+      <a:documentation>Indien een uitspraak betrekking heeft op een bepaalde periode dan wordt dat hier kenbaar gemaakt. Dit element is alleen verplicht indien van toepassing.
+Wordt met name gebruikt voor belastingzaken, belastingjaar.</a:documentation>
+      <ref name="dateStart"/>
+      <optional>
+        <ref name="dateEnd"/>
+      </optional>
+      <ref name="attlist.temporal"/>
+    </element>
+  </define>
+  <define name="dateStart">
+    <element name="start">
+      <a:documentation>De datum of het jaar waarop een periode start. Datum is van het formaat "YYYY-MM-DD".</a:documentation>
+      <text/>
+      <attribute name="rdfs:label">
+        <a:documentation>Attribuut label heeft een FIXED waarde: "van".</a:documentation>
+        <value>van</value>
+      </attribute>
+    </element>
+  </define>
+  <define name="dateEnd">
+    <element name="end">
+      <a:documentation>De datum of het jaar waarop een periode eindigt. Datum is van het formaat "YYYY-MM-DD".</a:documentation>
+      <text/>
+      <attribute name="rdfs:label">
+        <a:documentation>Attribuut label heeft een FIXED waarde: "tot".</a:documentation>
+        <value>tot</value>
+      </attribute>
+    </element>
+  </define>
+  <define name="attlist.temporal">
+    <attribute name="rdfs:label">
+      <a:documentation>Attribuut label heeft een FIXED waarde: "Periode".</a:documentation>
+      <value>Periode</value>
+    </attribute>
+  </define>
+  <define name="dcSpatial">
+    <element name="dcterms:spatial">
+      <a:documentation>De zittingplaats waar de uitspraak is gegeven, niet verplicht, alleen indien bekend.</a:documentation>
+      <text/>
+      <attribute name="rdfs:label">
+        <a:documentation>Attribuut label heeft een FIXED waarde: "Zittingsplaats".</a:documentation>
+        <value>Zittingsplaats</value>
+      </attribute>
+      <optional>
+        <ref name="attlist.resource"/>
+      </optional>
+    </element>
+  </define>
+  <define name="dcSubject">
+    <element name="dcterms:subject">
+      <a:documentation>Het onderwerp van de uitspraak, aangegeven met een rechtsgebied. Ook alle hiërarchisch gezien hoger gelegen rechtsgebieden worden opgenomen in de tekst.
+Als rdf:resource wordt alleen de identifier van het toegekende rechtsgebied opgenomen (zonder iodentifiers van de hogere rechtsgebieden).</a:documentation>
+      <text/>
+      <ref name="attlist.resource">
+        <a:documentation>Attribuut scheme heeft een FIXED waarde: "http://psi.rechtspraak.nl/rechtsgebied#".</a:documentation>
+      </ref>
+      <attribute name="rdfs:label">
+        <a:documentation>Attribuut label heeft een FIXED waarde: "Rechtsgebied".</a:documentation>
+        <value>Rechtsgebied</value>
+      </attribute>
+    </element>
+  </define>
+  <define name="dcRelation">
+    <element name="dcterms:relation">
+      <a:documentation>dcterms:relation wordt uitsluitend gebruikt voor het beschrijven van de formele relaties.
+Als ecli:resourceIdentifier wordt de ECLI opgenomen waarmee 'deze' ECLI een relatie heeft. De aard van de relatie wordt in de tekst tot uitdrukking gebracht.
+De tekst is gelijk aan de tekst zoals deze op rechtspraak.nl wordt gepubliceerd.</a:documentation>
+      <text/>
+      <attribute name="ecli:resourceIdentifier">
+        <data type="anyURI"/>
+      </attribute>
+      <attribute name="psi:type">
+        <a:documentation>Het type relatie zoals: hoger beroep, cassatie etc. Aangegeven door de identifier ("psi:"). Voorbeeld: gebruikt "http://psi.rechtspraak.nl/formeel#hogerBeroep" voor "hoger beroep"</a:documentation>
+        <data type="anyURI"/>
+      </attribute>
+      <attribute name="psi:gevolg">
+        <a:documentation>Het gevolg, bijvoorbeeld: "verworpen", "terugverwezen". Aangegeven door de identifier ("psi:"). Voorbeeld: gebruikt "http://psi.rechtspraak.nl/gevolg#verworpen" voor "Verworpen".</a:documentation>
+        <data type="anyURI"/>
+      </attribute>
+      <attribute name="psi:aanleg">
+        <a:documentation>Aanleg geeft aan of de verwezen uitspraak in eerdere of latere aanleg, gebruikt de identifier ("psi:"). Voorbeeld: gebruikt "http://psi.rechtspraak.nl/eerdereAanleg" voor "Eerdere aanleg".</a:documentation>
+        <data type="anyURI"/>
+      </attribute>
+      <attribute name="rdfs:label">
+        <a:documentation>Attribuut label heeft een FIXED waarde: "Formele relatie".</a:documentation>
+        <value>Formele relatie</value>
+      </attribute>
+    </element>
+  </define>
+  <define name="dcReferences">
+    <element name="dcterms:references">
+      <a:documentation>Verwijzingen. wetsverwijzing (BWB of EU) of verwijzing naar andere jurisprudentie. Waar van toepassing wordt gebruik gemaakt van de Juriconnect conventie.
+Voor wetsverwijzingen BWB wordt de namespace-prefix "bwb:" gebruikt en voor verwijzingen naar een ECLI wordt de namespace "http://deeplink.rechtspraak.nl/1_0/" gebruikt (met prefix "ecli"). Voor verwijzingen naar EU-regelgeving wordt geen prefix of namespace gebruikt.
+Tekstueel wordt zoveel mogelijk gebruik gemaakt van de citeertitel of een titel zoals bij "dcterms:title" is beschreven.</a:documentation>
+      <text/>
+      <ref name="attlist.resource.refs"/>
+      <attribute name="rdfs:label">
+        <a:documentation>Attribuut label is een enumeratie van twee mogelijke waarden: "Wetsverwijzing" of "Verwijzing".</a:documentation>
+        <choice>
+          <value>Wetsverwijzing</value>
+          <value>Verwijzing</value>
+        </choice>
+      </attribute>
+    </element>
+  </define>
+  <define name="dcHasVersion">
+    <element name="dcterms:hasVersion">
+      <a:documentation>Opsomming van de bekende vindplaatsen voor de betreffende uitspraak/conclusie, met indien van toepassing vermelding van de annotatie die daarbij is gebpubliceerd.</a:documentation>
+      <ref name="rdfList"/>
+      <attribute name="resourceIdentifier">
+        <a:documentation>Attribuut resourceIdentifier heeft een FIXED waarde: "http://psi.rechtspraak.nl/vindplaats".</a:documentation>
+        <value>http://psi.rechtspraak.nl/vindplaats</value>
+      </attribute>
+      <attribute name="rdfs:label">
+        <a:documentation>Attribuut label heeft een FIXED waarde: "Vindplaatsen".</a:documentation>
+        <value>Vindplaatsen</value>
+      </attribute>
+    </element>
+  </define>
+  <define name="rdfList">
+    <a:documentation>dcisVersionOf =
+Verwijst voor een document naar de ECLI waar deze bijhoort. Element opgenomen ivm de Europese regels voor metadata bij gepubliceerde uitspraken.
+Dit element zal echter niet in de te leveren open data worden opgenomen aangezien dit in die context redundant is.
+element dcterms:isVersionOf {
+xsd:anyURI
+}</a:documentation>
+    <element name="rdf:list">
+      <a:documentation>Deze lijst is niet voorzien van referenties of hyperlinks, en een eenvoudige rdf:li constructie volstaat.</a:documentation>
+      <oneOrMore>
+        <ref name="rdfLi"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="rdfLi">
+    <element name="rdf:li">
+      <a:documentation>Wordt exclusief gebruikt voor de opsomming vindplaatsen van jurisprudentie anders dan op rechtspraak.nl. De notatie is gelijk als wat op rechtspraak.nl gebruikelijk is voor vindplaatsen en annotaties.</a:documentation>
+      <text/>
+    </element>
+  </define>
+  <define name="dcHasFormat">
+    <element name="dcterms:hasFormat">
+      <a:documentation>NB Uitsluitend wanneer de tekst beschikbaar is op rechtspraak.nl!
+Indien ook de tekst van de uitspraak (het document) beschikbaar is op rechtspraak.nl en niet alleen de metadata dan wordt dit in het attribuut "rdf:resource" aangegeven met de URL naar het document op rechtspraak.nl.
+Element hasFormat heeft een FIXED waarde: "HTML". De resourceIdentifier bevat de hyperling naar de betreffende uitspraak op rechtspraak.nl.</a:documentation>
+      <value>HTML</value>
+      <choice>
+        <ref name="attlist.resource"/>
+        <attribute name="tr:resourceIdentifier">
+          <a:documentation>Indien de uitspraak in het domein "Tuchtrecht" hoort dan wordt hier de identifier opgenomen waarmee de betreffende uitspraak op tuchtrecht.overheid.nl kan worden teruggevonden.</a:documentation>
+          <data type="anyURI"/>
+        </attribute>
+      </choice>
+    </element>
+  </define>
+</grammar>

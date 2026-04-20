@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+  targetNamespace="http://www.w3.org/1999/xlink" xmlns:ecli="https://e-justice.europa.eu/ecli"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:tr="http://tuchtrecht.overheid.nl/"
+  xmlns:eu="http://publications.europa.eu/celex/" xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:bwb="bwb-dl" xmlns:cvdr="http://decentrale.regelgeving.overheid.nl/cvdr/"
+  xmlns:rs="http://www.rechtspraak.nl/schema/rechtspraak-1.0" xmlns:psi="http://psi.rechtspraak.nl/"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xs:attribute name="href" type="xs:anyURI"/>
+  <xs:attribute name="role" type="xs:anyURI">
+    <xs:annotation>
+      <xs:documentation>Attributen voor het vastleggen van referenties in de tekst (oa elementen link en blockquote).
+href bevat het adres (of identifier) waar de verwezen tekst is te vinden. In het 'role' attribuut
+kan worden vastgelegd wat de aard van de link is (voorbeeld: 'wetgeving' of 'uitspraak').
+Het attibuut 'label' bevat de tekst die getoont kan worden indien de link tag zelf geen tekst
+omvat.</xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+  <xs:attribute name="label"/>
+  <xs:attribute name="title"/>
+</xs:schema>

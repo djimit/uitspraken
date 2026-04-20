@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns:rs="http://www.rechtspraak.nl/schema/rechtspraak-1.0" xmlns="http://relaxng.org/ns/structure/1.0">
+  <include href="open-metadata.rng"/>
+  <include href="rechtspraak-1_0.rng">
+    <define name="nn">
+      <notAllowed/>
+    </define>
+  </include>
+  <start combine="choice">
+    <ref name="open-rechtspraak"/>
+  </start>
+  <define name="open-rechtspraak">
+    <element name="open-rechtspraak">
+      <a:documentation>root-element voor leveringen open data.</a:documentation>
+      <ref name="open-metadata"/>
+      <optional>
+        <ref name="inhoudsindicatie"/>
+      </optional>
+      <optional>
+        <choice>
+          <ref name="uitspraak"/>
+          <ref name="conclusie"/>
+        </choice>
+      </optional>
+    </element>
+  </define>
+</grammar>

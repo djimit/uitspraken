@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" xmlns:ecli="https://e-justice.europa.eu/ecli" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:tr="http://tuchtrecht.overheid.nl/" xmlns:eu="http://publications.europa.eu/celex/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:bwb="bwb-dl" xmlns:cvdr="http://decentrale.regelgeving.overheid.nl/cvdr/" xmlns:rs="http://www.rechtspraak.nl/schema/rechtspraak-1.0" xmlns:psi="http://psi.rechtspraak.nl/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xs:import namespace="bwb-dl" schemaLocation="bwb.xsd"/>
+  <xs:import namespace="http://decentrale.regelgeving.overheid.nl/cvdr/" schemaLocation="cvdr.xsd"/>
+  <xs:import namespace="http://psi.rechtspraak.nl/" schemaLocation="psi.xsd"/>
+  <xs:import namespace="http://publications.europa.eu/celex/" schemaLocation="eu.xsd"/>
+  <xs:import namespace="http://purl.org/dc/terms/" schemaLocation="open-metadata.xsd"/>
+  <xs:import namespace="http://tuchtrecht.overheid.nl/" schemaLocation="tr.xsd"/>
+  <xs:import namespace="http://www.rechtspraak.nl/schema/rechtspraak-1.0" schemaLocation="rechtspraak-1_0.xsd"/>
+  <xs:import namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" schemaLocation="rdf.xsd"/>
+  <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+  <xs:import namespace="http://www.w3.org/2000/01/rdf-schema#" schemaLocation="rdfs.xsd"/>
+  <xs:import namespace="https://e-justice.europa.eu/ecli" schemaLocation="ecli.xsd"/>
+  <xs:element name="open-rechtspraak">
+    <xs:annotation>
+      <xs:documentation>root-element voor leveringen open data.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="rdf:RDF"/>
+        <xs:element minOccurs="0" ref="rs:inhoudsindicatie"/>
+        <xs:choice minOccurs="0">
+          <xs:element ref="rs:uitspraak"/>
+          <xs:element ref="rs:conclusie"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

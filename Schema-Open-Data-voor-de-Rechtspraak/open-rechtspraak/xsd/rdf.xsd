@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+  targetNamespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:ecli="https://e-justice.europa.eu/ecli"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:tr="http://tuchtrecht.overheid.nl/"
+  xmlns:eu="http://publications.europa.eu/celex/" xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:bwb="bwb-dl" xmlns:cvdr="http://decentrale.regelgeving.overheid.nl/cvdr/"
+  xmlns:rs="http://www.rechtspraak.nl/schema/rechtspraak-1.0" xmlns:psi="http://psi.rechtspraak.nl/"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xs:import namespace="http://psi.rechtspraak.nl/" schemaLocation="psi.xsd"/>
+  <xs:import namespace="http://purl.org/dc/terms/" schemaLocation="open-metadata.xsd"/>
+  <xs:attribute name="language">
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:enumeration value="nl"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+  <xs:attribute name="about" type="xs:anyURI">
+    <xs:annotation>
+      <xs:documentation>rdf:about bevat de ECLI waar deze metadata betrekking op heeft.</xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+  <xs:element name="RDF">
+    <xs:annotation>
+      <xs:documentation>Dit metadata schema is gebaseerd op de richtlijnen van de Nederlandse Overheid zoals vastgelegd in de OWMS (Overheids Web Metadata Standaard 4.0) en op de
+voorwaarden van de EU met betrekking tot het publiceren van gegeven voor een "ECLI-register". Beide richtlijnen maken gebruik van de DCMI (Dublin Core) standaard (dcterms)</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="rdf:Description"/>
+        <xs:element minOccurs="0" ref="rdf:Description"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Description">
+    <xs:annotation>
+      <xs:documentation>Er zijn mogelijk twee elementen rdf:Description aanwezieg. De eerste is feitelijk het ECLI-register.
+De tweede rdf:Description bevat de aanvullende metadata voor een gepubliceerde tekst.
+Deze is te herkennen aan het attribuut "rdf:about" waarin de document identifier wordt gegeven als een URI.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="dcterms:metadataCore"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="dcterms:replaces"/>
+        <xs:element minOccurs="0" ref="dcterms:isReplacedBy"/>
+        <xs:element minOccurs="0" ref="dcterms:creator"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="dcterms:contributor"/>
+        <xs:element minOccurs="0" ref="dcterms:date"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="psi:zaaknummer"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="dcterms:alternative"/>
+        <xs:element minOccurs="0" ref="dcterms:type"/>
+        <xs:element minOccurs="0" ref="psi:procedure"/>
+        <xs:element minOccurs="0" ref="dcterms:coverage"/>
+        <xs:element minOccurs="0" ref="dcterms:temporal"/>
+        <xs:element minOccurs="0" ref="dcterms:spatial"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="dcterms:subject"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="dcterms:relation"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="dcterms:references"/>
+        <xs:element minOccurs="0" ref="dcterms:hasVersion"/>
+        <xs:element minOccurs="0" ref="dcterms:title"/>
+        <xs:element minOccurs="0" ref="dcterms:abstract"/>
+      </xs:sequence>
+      <xs:attribute ref="rdf:about"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="list">
+    <xs:annotation>
+      <xs:documentation>Deze lijst is niet voorzien van referenties of hyperlinks, en een eenvoudige rdf:li constructie volstaat.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="rdf:li"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="li" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Wordt exclusief gebruikt voor de opsomming vindplaatsen van jurisprudentie anders dan op rechtspraak.nl. De notatie is gelijk als wat op rechtspraak.nl gebruikelijk is voor vindplaatsen en annotaties.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+</xs:schema>

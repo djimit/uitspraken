@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://purl.org/dc/terms/" xmlns:ecli="https://e-justice.europa.eu/ecli" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:tr="http://tuchtrecht.overheid.nl/" xmlns:eu="http://publications.europa.eu/celex/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:bwb="bwb-dl" xmlns:cvdr="http://decentrale.regelgeving.overheid.nl/cvdr/" xmlns:rs="http://www.rechtspraak.nl/schema/rechtspraak-1.0" xmlns:psi="http://psi.rechtspraak.nl/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xs:import schemaLocation="open-rechtspraak.xsd"/>
+  <xs:import namespace="bwb-dl" schemaLocation="bwb.xsd"/>
+  <xs:import namespace="http://decentrale.regelgeving.overheid.nl/cvdr/" schemaLocation="cvdr.xsd"/>
+  <xs:import namespace="http://psi.rechtspraak.nl/" schemaLocation="psi.xsd"/>
+  <xs:import namespace="http://publications.europa.eu/celex/" schemaLocation="eu.xsd"/>
+  <xs:import namespace="http://tuchtrecht.overheid.nl/" schemaLocation="tr.xsd"/>
+  <xs:import namespace="http://www.rechtspraak.nl/schema/rechtspraak-1.0" schemaLocation="rechtspraak-1_0.xsd"/>
+  <xs:import namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" schemaLocation="rdf.xsd"/>
+  <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+  <xs:import namespace="http://www.w3.org/2000/01/rdf-schema#" schemaLocation="rdfs.xsd"/>
+  <xs:import namespace="https://e-justice.europa.eu/ecli" schemaLocation="ecli.xsd"/>
+  <xs:attributeGroup name="attlist.language">
+    <xs:annotation>
+      <xs:documentation>Versienr: 1.0
+Auteur: Aad Kamsteeg
+Organisatie: Spir-it
+Datum: 2012-08-20
+Laatste wijziging: 2012-08-20
+
+Bijzonderheden:
+Voorkeursnamen voor display van de informatiecomponenten (elementen) worden gegeven als attributen rdfs:label. De taal van de voorkeurslabelslabels is altijd Nederlands (nl).
+Root element voor de open-metadata distributie. Daar waar mogelijk wordt aangesloten bij de standaarden:
+- RDF (Resource Description Framework) Als container-element;
+- OWMS (Overheids Web Metadata Standaard);
+- DC (Dublin Core);
+- DCTERMS (Dublin Core Terms).
+- PSI (Published Subject Identifier). Identifier in de context van de Rechtspraak ("http://psi.rechtspraak.nl/").
+Indien voor begrippen een PSI (Published Subject Identifier) voorhanden is dan zal deze worden opgenomen als een rdf:resource attribuut.
+All metadata not based on a scheme or a fixed format (dates) must have a language indication (rdf:language="nl").</xs:documentation>
+    </xs:annotation>
+    <xs:attribute ref="rdf:language"/>
+    <xs:attribute name="lang">
+      <xs:annotation>
+        <xs:documentation>Taalaanduiding als de eenvoudige ISO-639 (twee-letter codes) afkortingen. Lijst zal in ieder geval alle  officiële Europese talen moeten bevatten.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="bg">
+            <xs:annotation>
+              <xs:documentation>Bulgaars</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="cs">
+            <xs:annotation>
+              <xs:documentation>Tsjechisch</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="da">
+            <xs:annotation>
+              <xs:documentation>Deens		</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="en">
+            <xs:annotation>
+              <xs:documentation>Engels</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="de">
+            <xs:annotation>
+              <xs:documentation>Duits</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="et">
+            <xs:annotation>
+              <xs:documentation>Ests</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="el">
+            <xs:annotation>
+              <xs:documentation>Grieks</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="es">
+            <xs:annotation>
+              <xs:documentation>Spaans</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="fr">
+            <xs:annotation>
+              <xs:documentation>Frans</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="ga">
+            <xs:annotation>
+              <xs:documentation>Iers</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="it">
+            <xs:annotation>
+              <xs:documentation>Italiaans</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="lv">
+            <xs:annotation>
+              <xs:documentation>Lets</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="lt">
+            <xs:annotation>
+              <xs:documentation>Litouws</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="hu">
+            <xs:annotation>
+              <xs:documentation>Hongaars</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="mt">
+            <xs:annotation>
+              <xs:documentation>Maltees</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="nl">
+            <xs:annotation>
+              <xs:documentation>Nederlands</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="pl">
+            <xs:annotation>
+              <xs:documentation>Pools</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="pt">
+            <xs:annotation>
+              <xs:documentation>Portugees</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="ro">
+            <xs:annotation>
+              <xs:documentation>Roemeens</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="sk">
+            <xs:annotation>
+              <xs:documentation>Slowaaks</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="sl">
+            <xs:annotation>
+              <xs:documentation>Sloveens</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="fi">
+            <xs:annotation>
+              <xs:documentation>Fins</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="sv">
+            <xs:annotation>
+              <xs:documentation>Zweeds</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="attlist.resource">
+    <xs:attribute name="resourceIdentifier" use="required" type="xs:anyURI"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="attlist.resource.refs">
+    <xs:attribute ref="eu:resourceIdentifier"/>
+    <xs:attributeGroup ref="ecli:resourceIdentifier"/>
+    <xs:attribute ref="bwb:resourceIdentifier"/>
+    <xs:attribute ref="cvdr:resourceIdentifier"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="attlist.description">
+    <xs:attribute ref="rdf:about" use="required"/>
+  </xs:attributeGroup>
+  <xs:group name="metadataCore">
+    <xs:annotation>
+      <xs:documentation>metadataCore bevat de elementen die zowel voor het ECLI-register als voor het document worden gebruikt.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element ref="dcterms:identifier"/>
+      <xs:element ref="dcterms:format"/>
+      <xs:element ref="dcterms:accessRights"/>
+      <xs:element ref="dcterms:modified"/>
+      <xs:element ref="dcterms:issued"/>
+      <xs:element minOccurs="0" ref="dcterms:publisher"/>
+      <xs:element ref="dcterms:language"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:element name="identifier" type="xs:anyURI">
+    <xs:annotation>
+      <xs:documentation>De identifier van het document. De identifier is de URL voor de ECLI op rectspraak.nl.
+Noot: - voor rechtspraak.nl maakt het niet uit of een document (tekst) beschikbaar is of alleen een registratie in het ecli-register.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="replaces">
+    <xs:annotation>
+      <xs:documentation>Verwijst naar een ECLI dat in het verleden ten onrechte aan de betreffende uitspraak is toegekend en is komen te vervallen, of naar het in het verleden toegekende LJN.
+Wanneer een uitspraak of conclusie ooit een LJN heeft gehad, dan wordt het betreffende LJN voor compatibiliteit nog wel vermeld (maar niet meer actief gebruikt)</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="rdfs:label"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="isReplacedBy" type="xs:anyURI">
+    <xs:annotation>
+      <xs:documentation>isReplacedBy geeft de vervangende identifier voor vervallen ECLI's (en LJNs-index?).</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="format" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Het element format heeft een FIXED waarde: "text/xml".</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="title">
+    <xs:annotation>
+      <xs:documentation>Uitspraken en conclusies hebben geen titel, de titel wordt daarom samengesteld uit de volgende componenten:
+- ECLI + ", "
+- Uitspraakdatum + " - "
+- Instantie</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="dcterms:attlist.language"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="alternative">
+    <xs:annotation>
+      <xs:documentation>Sommige uitspraken krijgen een aparte titel waarmee aan de uitspraak wordt gerefereerd. Meestal betreft het een spraakmakende zaak.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="dcterms:attlist.language"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="type">
+    <xs:annotation>
+      <xs:documentation>Het type van het beschreven object. De PSI van het type is aangegeven in het attribuut resourceIdentifier met de volgende mogelijke waarden:
+- psi:gerechtelijkProduct#uitspraak
+- psi:gerechtelijkProduct#conclusie
+Het element type bevat de leesbare vormen: "Uitspraak" of "Conclusie".</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:restriction base="xs:anyType">
+          <xs:simpleType>
+            <xs:restriction base="xs:token">
+              <xs:enumeration value="Uitspraak"/>
+              <xs:enumeration value="Conclusie"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:attributeGroup ref="dcterms:attlist.resource"/>
+          <xs:attributeGroup ref="dcterms:attlist.language"/>
+        </xs:restriction>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="language">
+    <xs:annotation>
+      <xs:documentation>De taal waarin het object (document) gesteld is.
+Het element language heeft een vaste waarde: "nl".</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:enumeration value="nl"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="coverage">
+    <xs:annotation>
+      <xs:documentation>Landcode van het gebied bestreken door de justitiele organisatie. coverage heeft een FIXED waarde 'NL'</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:enumeration value="NL"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="accessRights">
+    <xs:annotation>
+      <xs:documentation>dcterms:accessRights heeft twee mogelijke waarden: 'public' indien op rechtspraak.nl of op tuchtrecht.overheid.nl gepubliceerd; 'private' indien niet publiek gepubliceerd.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:enumeration value="public"/>
+        <xs:enumeration value="private"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="publisher">
+    <xs:annotation>
+      <xs:documentation>Publisher heeft de waarde: "Raad voor de Rechtspraak".</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attribute name="resourceIdentifier" type="xs:anyURI"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="abstract">
+    <xs:annotation>
+      <xs:documentation>Samenvatting van de uitspraak. Indien de tekst is gepubliceerd is op rechtspraak.nl dan kan hiervoor de inhoud van de 'inhoudsindicatie' worden gebruikt.
+Een verwijzing naar de inhoudsindicatie is meer op zijn plaats. Deze verwijzing kan als een vaste xpath worden opgenomen indien de combinatie van metadata en tekst wordt geleverd.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attribute name="resourceIdentifier">
+        <xs:annotation>
+          <xs:documentation>Attribuut resourceIdentifier heeft een FIXED waarde: "../rs:inhoudsindicatie".</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="../../rs:inhoudsindicatie"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="creator">
+    <xs:annotation>
+      <xs:documentation>De eindverantwoordelijke instantie voor de uitspraak / conclusie. De instantie met het wettelijk mandaat om het document op te stellen.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="dcterms:attlist.creator"/>
+      <xs:attribute ref="psi:afdeling"/>
+      <xs:attributeGroup ref="rdfs:label1"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.creator">
+    <xs:attribute name="scheme">
+      <xs:annotation>
+        <xs:documentation>De gerechtelijke instantie die de uispraak heeft gedaan, de conclusie heeft opgesteld of vervaardigd.
+Het attribuut "scheme" geeft aan wat de afkomst is van de gehanteerde termen.
+Attribuut scheme heeft een FIXED waarde: "overheid.RechterlijkeMacht".</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="overheid.RechterlijkeMacht"/>
+          <xs:enumeration value="psi.rechtspraak"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="resourceIdentifier" type="xs:anyURI"/>
+    <xs:attribute ref="psi:resourceIdentifier"/>
+  </xs:attributeGroup>
+  <xs:element name="contributor">
+    <xs:annotation>
+      <xs:documentation>contributor bevat de namen van rechters, raadsheren, staatsraden voor uitspraken of de ag-pg voor conclusies</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="rdfs:label2"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="date">
+    <xs:annotation>
+      <xs:documentation>Datum waarop de uitspraak is gedaan en vrijgegeven. Let op, dit is niet hetzelfde als de publicatiedatum (dcterms:available).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:date">
+          <xs:attributeGroup ref="rdfs:label3"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="modified" type="xs:dateTime">
+    <xs:annotation>
+      <xs:documentation>De datum waarop de gegevens voor het laatst zijn aangepast. Indien geen aanpassingen, dan is dit dezelfde datum als de dcterms:date.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="issued">
+    <xs:annotation>
+      <xs:documentation>NB Uitsluitend wanneer de tekst beschikbaar is op rechtspraak.nl!
+De datum waarop het document is gepubliceerd (op rechtspraak.nl).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:date">
+          <xs:attributeGroup ref="rdfs:label4"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="temporal">
+    <xs:annotation>
+      <xs:documentation>Indien een uitspraak betrekking heeft op een bepaalde periode dan wordt dat hier kenbaar gemaakt. Dit element is alleen verplicht indien van toepassing.
+Wordt met name gebruikt voor belastingzaken, belastingjaar.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="dcterms:dateStart"/>
+        <xs:group minOccurs="0" ref="dcterms:dateEnd"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="dcterms:attlist.temporal"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="dateStart">
+    <xs:sequence>
+      <xs:element name="start" form="unqualified">
+        <xs:annotation>
+          <xs:documentation>De datum of het jaar waarop een periode start. Datum is van het formaat "YYYY-MM-DD".</xs:documentation>
+        </xs:annotation>
+        <xs:complexType mixed="true">
+          <xs:attributeGroup ref="rdfs:label5"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="dateEnd">
+    <xs:sequence>
+      <xs:element name="end" form="unqualified">
+        <xs:annotation>
+          <xs:documentation>De datum of het jaar waarop een periode eindigt. Datum is van het formaat "YYYY-MM-DD".</xs:documentation>
+        </xs:annotation>
+        <xs:complexType mixed="true">
+          <xs:attributeGroup ref="rdfs:label6"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  <xs:attributeGroup name="attlist.temporal">
+    <xs:attributeGroup ref="rdfs:label7"/>
+  </xs:attributeGroup>
+  <xs:element name="spatial">
+    <xs:annotation>
+      <xs:documentation>De zittingplaats waar de uitspraak is gegeven, niet verplicht, alleen indien bekend.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="rdfs:label8"/>
+      <xs:attribute name="resourceIdentifier" type="xs:anyURI"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="subject">
+    <xs:annotation>
+      <xs:documentation>Het onderwerp van de uitspraak, aangegeven met een rechtsgebied. Ook alle hiërarchisch gezien hoger gelegen rechtsgebieden worden opgenomen in de tekst.
+Als rdf:resource wordt alleen de identifier van het toegekende rechtsgebied opgenomen (zonder iodentifiers van de hogere rechtsgebieden).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="dcterms:attlist.resource"/>
+      <xs:attributeGroup ref="rdfs:label9"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="relation">
+    <xs:annotation>
+      <xs:documentation>dcterms:relation wordt uitsluitend gebruikt voor het beschrijven van de formele relaties.
+Als ecli:resourceIdentifier wordt de ECLI opgenomen waarmee 'deze' ECLI een relatie heeft. De aard van de relatie wordt in de tekst tot uitdrukking gebracht.
+De tekst is gelijk aan de tekst zoals deze op rechtspraak.nl wordt gepubliceerd.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="ecli:resourceIdentifier1"/>
+      <xs:attribute ref="psi:type" use="required"/>
+      <xs:attribute ref="psi:gevolg" use="optional"/>
+      <xs:attribute ref="psi:aanleg" use="required"/>
+      <xs:attributeGroup ref="rdfs:label10"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="references">
+    <xs:annotation>
+      <xs:documentation>Verwijzingen. wetsverwijzing (BWB of EU) of verwijzing naar andere jurisprudentie. Waar van toepassing wordt gebruik gemaakt van de Juriconnect conventie.
+Voor wetsverwijzingen BWB wordt de namespace-prefix "bwb:" gebruikt en voor verwijzingen naar een ECLI wordt de namespace "http://deeplink.rechtspraak.nl/1_0/" gebruikt (met prefix "ecli"). Voor verwijzingen naar EU-regelgeving wordt geen prefix of namespace gebruikt.
+Tekstueel wordt zoveel mogelijk gebruik gemaakt van de citeertitel of een titel zoals bij "dcterms:title" is beschreven.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="dcterms:attlist.resource.refs"/>
+      <xs:attributeGroup ref="rdfs:label11"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="hasVersion">
+    <xs:annotation>
+      <xs:documentation>Opsomming van de bekende vindplaatsen voor de betreffende uitspraak/conclusie, met indien van toepassing vermelding van de annotatie die daarbij is gebpubliceerd.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="dcterms:rdfList">
+          <xs:attribute name="resourceIdentifier" use="required">
+            <xs:annotation>
+              <xs:documentation>Attribuut resourceIdentifier heeft een FIXED waarde: "http://psi.rechtspraak.nl/vindplaats".</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:token">
+                <xs:enumeration value="http://psi.rechtspraak.nl/vindplaats"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          <xs:attributeGroup ref="rdfs:label12"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="rdfList">
+    <xs:annotation>
+      <xs:documentation>dcisVersionOf =
+Verwijst voor een document naar de ECLI waar deze bijhoort. Element opgenomen ivm de Europese regels voor metadata bij gepubliceerde uitspraken.
+Dit element zal echter niet in de te leveren open data worden opgenomen aangezien dit in die context redundant is.
+element dcterms:isVersionOf {
+xsd:anyURI
+}</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element ref="rdf:list"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="hasFormat">
+    <xs:annotation>
+      <xs:documentation>NB Uitsluitend wanneer de tekst beschikbaar is op rechtspraak.nl!
+Indien ook de tekst van de uitspraak (het document) beschikbaar is op rechtspraak.nl en niet alleen de metadata dan wordt dit in het attribuut "rdf:resource" aangegeven met de URL naar het document op rechtspraak.nl.
+Element hasFormat heeft een FIXED waarde: "HTML". De resourceIdentifier bevat de hyperling naar de betreffende uitspraak op rechtspraak.nl.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:restriction base="xs:anyType">
+          <xs:simpleType>
+            <xs:restriction base="xs:token">
+              <xs:enumeration value="HTML"/>
+            </xs:restriction>
+          </xs:simpleType>
+          <xs:attribute name="resourceIdentifier" type="xs:anyURI"/>
+          <xs:attribute ref="tr:resourceIdentifier"/>
+        </xs:restriction>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

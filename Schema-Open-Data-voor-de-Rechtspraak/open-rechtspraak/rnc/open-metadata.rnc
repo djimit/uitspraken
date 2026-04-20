@@ -1,0 +1,386 @@
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+namespace rdfs = "http://www.w3.org/2000/01/rdf-schema#"
+namespace dcterms = "http://purl.org/dc/terms/"
+namespace owms  = "http://standaarden.overheid.nl/owms/terms/"
+namespace bwb = "bwb-dl"
+namespace ecli = "https://e-justice.europa.eu/ecli"
+namespace psi = "http://psi.rechtspraak.nl/"
+namespace eu = "http://publications.europa.eu/celex/"
+namespace cvdr = "http://decentrale.regelgeving.overheid.nl/cvdr/"
+namespace tr = "http://tuchtrecht.overheid.nl/"
+
+start |= open-metadata
+
+## Versienr: 1.0
+## Auteur: Aad Kamsteeg
+## Organisatie: Spir-it
+## Datum: 2012-08-20
+## Laatste wijziging: 2012-08-20
+##
+## Bijzonderheden:
+## Voorkeursnamen voor display van de informatiecomponenten (elementen) worden gegeven als attributen rdfs:label. De taal van de voorkeurslabelslabels is altijd Nederlands (nl).
+## Root element voor de open-metadata distributie. Daar waar mogelijk wordt aangesloten bij de standaarden:
+## - RDF (Resource Description Framework) Als container-element;
+## - OWMS (Overheids Web Metadata Standaard);
+## - DC (Dublin Core);
+## - DCTERMS (Dublin Core Terms).
+## - PSI (Published Subject Identifier). Identifier in de context van de Rechtspraak ("http://psi.rechtspraak.nl/").
+## Indien voor begrippen een PSI (Published Subject Identifier) voorhanden is dan zal deze worden opgenomen als een rdf:resource attribuut.
+## All metadata not based on a scheme or a fixed format (dates) must have a language indication (rdf:language="nl").
+
+attlist.language |= attribute rdf:language { 'nl' }
+
+attlist.resource =
+    attribute resourceIdentifier { xsd:anyURI }
+
+attlist.resource.refs =
+    ## Verwijzing (hyperlink) naar een publicatie in de CELEX-collectie van de EU.
+    attribute eu:resourceIdentifier { xsd:anyURI }?,
+    ## Verwijzing (hyperlink) naar een publicatie in het ECLI register (Jurisprudentie).
+    attribute ecli:resourceIdentifier { xsd:anyURI }?,
+    ## Verwijzing (hyperlink) naar een publicatie in de BWB-collectie (Nederlandse regelgeving).
+    attribute bwb:resourceIdentifier { text }?,
+    ## Verwijzing (hyperlink) naar een publicatie in de CVDR-collectie (Lagere regelgeving).
+    attribute cvdr:resourceIdentifier { xsd:anyURI }?
+
+attlist.description =
+    ## rdf:about bevat de ECLI waar deze metadata betrekking op heeft.
+    attribute rdf:about { xsd:anyURI }
+
+open-metadata = 
+    ## Dit metadata schema is gebaseerd op de richtlijnen van de Nederlandse Overheid zoals vastgelegd in de OWMS (Overheids Web Metadata Standaard 4.0) en op de
+    ## voorwaarden van de EU met betrekking tot het publiceren van gegeven voor een "ECLI-register". Beide richtlijnen maken gebruik van de DCMI (Dublin Core) standaard (dcterms)
+    element rdf:RDF { 
+        rdfDescription,
+        rdfDescription?
+}
+
+rdfDescription =
+    ## Er zijn mogelijk twee elementen rdf:Description aanwezieg. De eerste is feitelijk het ECLI-register.
+    ## De tweede rdf:Description bevat de aanvullende metadata voor een gepubliceerde tekst.
+    ## Deze is te herkennen aan het attribuut "rdf:about" waarin de document identifier wordt gegeven als een URI.
+    element rdf:Description {
+        metadataCore,
+        dcReplaces*,
+        dcIsReplacedBy?,
+        dcCreator?,
+        dcContributor*,
+        dcDate?,
+        psiZaaknummer*,
+        dcAlternative*,
+        dcType?,
+        psiProcedure?,
+        dcCoverage?,
+        dcTemporal?,
+        dcSpatial?,
+        dcSubject*,
+        dcRelation*,
+        dcReferences*,
+        dcHasVersion?,
+        # dcisVersionOf?,
+        dcTitle?,
+        dcAbstract?,
+        attlist.description?
+}
+
+## metadataCore bevat de elementen die zowel voor het ECLI-register als voor het document worden gebruikt.
+metadataCore =
+        dcIdentifier,
+        dcFormat,
+        dcAccessRights,
+        dcModified,
+        dcIssued,
+        dcPublisher?,
+        dcLanguage
+
+
+dcIdentifier =
+    ## De identifier van het document. De identifier is de URL voor de ECLI op rectspraak.nl.
+    ## Noot: - voor rechtspraak.nl maakt het niet uit of een document (tekst) beschikbaar is of alleen een registratie in het ecli-register.
+    element dcterms:identifier {
+        xsd:anyURI
+}
+
+dcReplaces =
+    ## Verwijst naar een ECLI dat in het verleden ten onrechte aan de betreffende uitspraak is toegekend en is komen te vervallen, of naar het in het verleden toegekende LJN.
+    ## Wanneer een uitspraak of conclusie ooit een LJN heeft gehad, dan wordt het betreffende LJN voor compatibiliteit nog wel vermeld (maar niet meer actief gebruikt)
+    element dcterms:replaces {
+        text,
+        ## Het atribuut label heeft een FIXED waarde: "Vervangt".
+        attribute rdfs:label { "Vervangt" }
+}
+
+dcIsReplacedBy =
+    ## isReplacedBy geeft de vervangende identifier voor vervallen ECLI's (en LJNs-index?).
+    element dcterms:isReplacedBy {
+        xsd:anyURI
+}
+
+dcFormat =
+    ## Het element format heeft een FIXED waarde: "text/xml".
+    element dcterms:format {
+        text
+}
+
+dcTitle =
+    ## Uitspraken en conclusies hebben geen titel, de titel wordt daarom samengesteld uit de volgende componenten:
+    ## - ECLI + ", "
+    ## - Uitspraakdatum + " - "
+    ## - Instantie
+    element dcterms:title {
+        text,
+        attlist.language
+}
+
+dcAlternative =
+    ## Sommige uitspraken krijgen een aparte titel waarmee aan de uitspraak wordt gerefereerd. Meestal betreft het een spraakmakende zaak.
+    element dcterms:alternative {
+    text,
+    attlist.language
+}
+   
+dcType =
+    ## Het type van het beschreven object. De PSI van het type is aangegeven in het attribuut resourceIdentifier met de volgende mogelijke waarden:
+    ## - psi:gerechtelijkProduct#uitspraak
+    ## - psi:gerechtelijkProduct#conclusie
+    ## Het element type bevat de leesbare vormen: "Uitspraak" of "Conclusie".
+    element dcterms:type {
+        ("Uitspraak" | "Conclusie"),
+        attlist.resource,
+        attlist.language
+}
+
+psiProcedure =
+    ## De procedure om tot een uitspraak te komen. Voorbeeld: "Eerste aanleg - meervoudig" of "Kort geding". Alleen de bijzondere procedures worden vermeld.
+    ## Een identifier in de namespace "psi.rechtspraak.nl/procedure#" kan worden toegevoegd als resourceIdentifier.
+    element psi:procedure {
+        text,
+        attlist.resource,
+        ## Attribuut label heeft een FIXED waarde: "Procedure".
+        attribute rdfs:label { "Procedure" },
+        attlist.language
+}
+
+psiZaaknummer =
+    ## Zaak- of rolnummer zoals door de instantie gebruikt. Indien sprake is van meer dan één zaaknummer dan worden deze gescheiden door een ";" (puntkomma) opgenomen.
+    element psi:zaaknummer {
+        text,
+        ## Attribuut label heeft een FIXED waarde: "Zaaknr.".
+        attribute rdfs:label { "Zaaknr" }
+}
+
+dcLanguage =
+    ## De taal waarin het object (document) gesteld is.
+    ## Het element language heeft een vaste waarde: "nl".
+    element dcterms:language {
+        "nl"
+}
+
+dcCoverage = 
+    ## Landcode van het gebied bestreken door de justitiele organisatie. coverage heeft een FIXED waarde 'NL'
+    element dcterms:coverage { 
+      "NL"
+}
+
+dcAccessRights = 
+    ## dcterms:accessRights heeft twee mogelijke waarden: 'public' indien op rechtspraak.nl of op tuchtrecht.overheid.nl gepubliceerd; 'private' indien niet publiek gepubliceerd.
+    element dcterms:accessRights {
+        "public" | "private" 
+ }
+
+dcPublisher =
+    ## Publisher heeft de waarde: "Raad voor de Rechtspraak".
+    element dcterms:publisher {
+        text,
+        ## Attribuut scheme heeft een FIXED waarde: "OVERHEID.RechterlijkeMacht".
+        ## Attribuut resourceIndentifier FIXED waarde: "http://www.rechtspraak.nl".
+        attlist.resource?
+}
+
+dcAbstract =
+    ## Samenvatting van de uitspraak. Indien de tekst is gepubliceerd is op rechtspraak.nl dan kan hiervoor de inhoud van de 'inhoudsindicatie' worden gebruikt.
+    ## Een verwijzing naar de inhoudsindicatie is meer op zijn plaats. Deze verwijzing kan als een vaste xpath worden opgenomen indien de combinatie van metadata en tekst wordt geleverd.
+    element dcterms:abstract {
+    text,
+    ## Attribuut resourceIdentifier heeft een FIXED waarde: "../rs:inhoudsindicatie".
+    attribute resourceIdentifier { "../../rs:inhoudsindicatie" }?
+}
+
+dcCreator = 
+    ## De eindverantwoordelijke instantie voor de uitspraak / conclusie. De instantie met het wettelijk mandaat om het document op te stellen.
+    element dcterms:creator {
+        text,
+        attlist.creator,
+        ## Indien de afdeling relevant en bekend is (hoofdafdeling, sub-afdeling, voorzitter/president) dan worden deze gegevens als tekst opgenomen.
+        attribute psi:afdeling { text }?,
+        ## Attribuut label heeft een FIXED waarde: "Instantie".
+        attribute rdfs:label { "Instantie" }
+}
+
+attlist.creator =
+    ## De gerechtelijke instantie die de uispraak heeft gedaan, de conclusie heeft opgesteld of vervaardigd.
+    ## Het attribuut "scheme" geeft aan wat de afkomst is van de gehanteerde termen.
+    ## Attribuut scheme heeft een FIXED waarde: "overheid.RechterlijkeMacht".
+    attribute scheme { "overheid.RechterlijkeMacht" | "psi.rechtspraak" }?,
+    ## Het attribuut resourceIdentifier bevat de betreffende identifier in de vorm van een URI.
+    attlist.resource?,
+    attribute psi:resourceIdentifier {xsd:anyURI} ?
+ 
+dcContributor =
+    ## contributor bevat de namen van rechters, raadsheren, staatsraden voor uitspraken of de ag-pg voor conclusies
+    element dcterms:contributor {
+        text,
+        ## het label bevat de benaming voor de contributor. Dit is afhankelijk van het instantietype.
+        ## rechtbank = "rechter"
+        ## gerechtshof en Centrale Raad van beroep = "raadsheer"
+        ## Raad van State = "Staatsraad"
+        ## Hoge Raad = "Raadsheer"
+        ## Parket bij de Hoge Raad = "AG-PG"
+        attribute rdfs:label { text }
+ }
+
+ dcDate =
+    ## Datum waarop de uitspraak is gedaan en vrijgegeven. Let op, dit is niet hetzelfde als de publicatiedatum (dcterms:available).
+    element dcterms:date {
+        xsd:date,
+        ## Voor conclusies wordt het label "Datum genomen" gebruikt, voor uitspraken "Uitspraakdatum".
+        [a:defaultValue = "Uitspraakdatum"]
+        attribute rdfs:label { ("Uitspraakdatum" | "Datum genomen") }
+}
+
+dcModified =
+    ## De datum waarop de gegevens voor het laatst zijn aangepast. Indien geen aanpassingen, dan is dit dezelfde datum als de dcterms:date.
+    element dcterms:modified {
+        xsd:dateTime
+}
+
+dcIssued =
+    ## NB Uitsluitend wanneer de tekst beschikbaar is op rechtspraak.nl!
+    ## De datum waarop het document is gepubliceerd (op rechtspraak.nl).
+    element dcterms:issued {
+        xsd:date,
+        ## Attribuut label heeft een FIXED waarde: "Publicatiedatum".
+        attribute rdfs:label { "Publicatiedatum" }
+ }
+ 
+ dcTemporal =
+    ## Indien een uitspraak betrekking heeft op een bepaalde periode dan wordt dat hier kenbaar gemaakt. Dit element is alleen verplicht indien van toepassing.
+    ## Wordt met name gebruikt voor belastingzaken, belastingjaar.
+        element dcterms:temporal {
+            dateStart,
+            dateEnd?,
+            attlist.temporal
+ }
+ 
+dateStart =
+    ## De datum of het jaar waarop een periode start. Datum is van het formaat "YYYY-MM-DD".
+    element start {
+        text,
+        ## Attribuut label heeft een FIXED waarde: "van".
+        attribute rdfs:label { "van" }
+}
+
+dateEnd =
+    ## De datum of het jaar waarop een periode eindigt. Datum is van het formaat "YYYY-MM-DD".
+    element end {
+        text,
+    ## Attribuut label heeft een FIXED waarde: "tot".
+    attribute rdfs:label { "tot" }
+}
+    
+attlist.temporal =
+    ## Attribuut label heeft een FIXED waarde: "Periode".
+    attribute rdfs:label { "Periode" }
+
+dcSpatial =
+    ## De zittingplaats waar de uitspraak is gegeven, niet verplicht, alleen indien bekend.
+    element dcterms:spatial {
+        text,
+        ## Attribuut label heeft een FIXED waarde: "Zittingsplaats".
+        attribute rdfs:label { "Zittingsplaats" },
+        attlist.resource?
+}
+
+dcSubject =
+    ## Het onderwerp van de uitspraak, aangegeven met een rechtsgebied. Ook alle hiërarchisch gezien hoger gelegen rechtsgebieden worden opgenomen in de tekst.
+    ## Als rdf:resource wordt alleen de identifier van het toegekende rechtsgebied opgenomen (zonder iodentifiers van de hogere rechtsgebieden).
+    element dcterms:subject {
+        text,
+        ## Attribuut scheme heeft een FIXED waarde: "http://psi.rechtspraak.nl/rechtsgebied#".
+        attlist.resource,
+        ## Attribuut label heeft een FIXED waarde: "Rechtsgebied".
+        attribute rdfs:label { "Rechtsgebied" }
+}
+
+dcRelation =
+    ## dcterms:relation wordt uitsluitend gebruikt voor het beschrijven van de formele relaties.
+    ## Als ecli:resourceIdentifier wordt de ECLI opgenomen waarmee 'deze' ECLI een relatie heeft. De aard van de relatie wordt in de tekst tot uitdrukking gebracht.
+    ## De tekst is gelijk aan de tekst zoals deze op rechtspraak.nl wordt gepubliceerd.
+    element dcterms:relation {
+        text,
+        attribute ecli:resourceIdentifier { xsd:anyURI },
+        ## Het type relatie zoals: hoger beroep, cassatie etc. Aangegeven door de identifier ("psi:"). Voorbeeld: gebruikt "http://psi.rechtspraak.nl/formeel#hogerBeroep" voor "hoger beroep"
+        attribute psi:type { xsd:anyURI },
+        ## Het gevolg, bijvoorbeeld: "verworpen", "terugverwezen". Aangegeven door de identifier ("psi:"). Voorbeeld: gebruikt "http://psi.rechtspraak.nl/gevolg#verworpen" voor "Verworpen".
+        attribute psi:gevolg { xsd:anyURI }?,
+        ## Aanleg geeft aan of de verwezen uitspraak in eerdere of latere aanleg, gebruikt de identifier ("psi:"). Voorbeeld: gebruikt "http://psi.rechtspraak.nl/eerdereAanleg" voor "Eerdere aanleg".
+        attribute psi:aanleg { xsd:anyURI },
+        ## Attribuut label heeft een FIXED waarde: "Formele relatie".
+        attribute rdfs:label { "Formele relatie" }
+}
+
+dcReferences =
+    ## Verwijzingen. wetsverwijzing (BWB of EU) of verwijzing naar andere jurisprudentie. Waar van toepassing wordt gebruik gemaakt van de Juriconnect conventie.
+    ## Voor wetsverwijzingen BWB wordt de namespace-prefix "bwb:" gebruikt en voor verwijzingen naar een ECLI wordt de namespace "http://deeplink.rechtspraak.nl/1_0/" gebruikt (met prefix "ecli"). Voor verwijzingen naar EU-regelgeving wordt geen prefix of namespace gebruikt.
+    ## Tekstueel wordt zoveel mogelijk gebruik gemaakt van de citeertitel of een titel zoals bij "dcterms:title" is beschreven.
+    element dcterms:references {
+        text,
+        attlist.resource.refs,
+        ## Attribuut label is een enumeratie van twee mogelijke waarden: "Wetsverwijzing" of "Verwijzing".
+        attribute rdfs:label { ("Wetsverwijzing" | "Verwijzing") }
+}
+
+dcHasVersion =
+    ## Opsomming van de bekende vindplaatsen voor de betreffende uitspraak/conclusie, met indien van toepassing vermelding van de annotatie die daarbij is gebpubliceerd.
+    element dcterms:hasVersion {
+    rdfList,
+    ## Attribuut resourceIdentifier heeft een FIXED waarde: "http://psi.rechtspraak.nl/vindplaats".
+    attribute resourceIdentifier { "http://psi.rechtspraak.nl/vindplaats" }, 
+    ## Attribuut label heeft een FIXED waarde: "Vindplaatsen".
+    attribute rdfs:label { "Vindplaatsen" }
+}
+
+## dcisVersionOf =
+    ## Verwijst voor een document naar de ECLI waar deze bijhoort. Element opgenomen ivm de Europese regels voor metadata bij gepubliceerde uitspraken.
+    ## Dit element zal echter niet in de te leveren open data worden opgenomen aangezien dit in die context redundant is.
+    ## element dcterms:isVersionOf {
+    ## xsd:anyURI
+## }
+
+rdfList =
+    ## Deze lijst is niet voorzien van referenties of hyperlinks, en een eenvoudige rdf:li constructie volstaat.
+    element rdf:list {
+        rdfLi+
+}
+
+rdfLi = 
+    ## Wordt exclusief gebruikt voor de opsomming vindplaatsen van jurisprudentie anders dan op rechtspraak.nl. De notatie is gelijk als wat op rechtspraak.nl gebruikelijk is voor vindplaatsen en annotaties.
+    element rdf:li {
+        text
+}
+
+dcHasFormat =
+    ## NB Uitsluitend wanneer de tekst beschikbaar is op rechtspraak.nl!
+    ## Indien ook de tekst van de uitspraak (het document) beschikbaar is op rechtspraak.nl en niet alleen de metadata dan wordt dit in het attribuut "rdf:resource" aangegeven met de URL naar het document op rechtspraak.nl.
+    ## Element hasFormat heeft een FIXED waarde: "HTML". De resourceIdentifier bevat de hyperling naar de betreffende uitspraak op rechtspraak.nl.
+    element dcterms:hasFormat {
+    "HTML",
+    (attlist.resource |
+    ## Indien de uitspraak in het domein "Tuchtrecht" hoort dan wordt hier de identifier opgenomen waarmee de betreffende uitspraak op tuchtrecht.overheid.nl kan worden teruggevonden.
+    attribute tr:resourceIdentifier { xsd:anyURI } )
+}
+
+
+

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+  targetNamespace="http://psi.rechtspraak.nl/" xmlns:ecli="https://e-justice.europa.eu/ecli"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:tr="http://tuchtrecht.overheid.nl/"
+  xmlns:eu="http://publications.europa.eu/celex/" xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:bwb="bwb-dl" xmlns:cvdr="http://decentrale.regelgeving.overheid.nl/cvdr/"
+  xmlns:rs="http://www.rechtspraak.nl/schema/rechtspraak-1.0" xmlns:psi="http://psi.rechtspraak.nl/"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xs:import schemaLocation="open-rechtspraak.xsd"/>
+  <xs:import namespace="http://purl.org/dc/terms/" schemaLocation="open-metadata.xsd"/>
+  <xs:import namespace="http://www.rechtspraak.nl/schema/rechtspraak-1.0"
+    schemaLocation="rechtspraak-1_0.xsd"/>
+  <xs:import namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" schemaLocation="rdf.xsd"/>
+  <xs:import namespace="http://www.w3.org/2000/01/rdf-schema#" schemaLocation="rdfs.xsd"/>
+  <xs:element name="procedure">
+    <xs:annotation>
+      <xs:documentation>De procedure om tot een uitspraak te komen. Voorbeeld: "Eerste aanleg - meervoudig" of "Kort geding". Alleen de bijzondere procedures worden vermeld.
+Een identifier in de namespace "psi.rechtspraak.nl/procedure#" kan worden toegevoegd als resourceIdentifier.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="dcterms:attlist.resource"/>
+      <xs:attributeGroup ref="rdfs:label13"/>
+      <xs:attributeGroup ref="dcterms:attlist.language"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="zaaknummer">
+    <xs:annotation>
+      <xs:documentation>Zaak- of rolnummer zoals door de instantie gebruikt. Indien sprake is van meer dan één zaaknummer dan worden deze gescheiden door een ";" (puntkomma) opgenomen.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="rdfs:label14"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attribute name="afdeling"/>
+  <xs:attribute name="resourceIdentifier" type="xs:anyURI"/>
+  <xs:attribute name="type" type="xs:anyURI">
+    <xs:annotation>
+      <xs:documentation>Het type relatie zoals: hoger beroep, cassatie etc. Aangegeven door de identifier ("psi:"). Voorbeeld: gebruikt "http://psi.rechtspraak.nl/formeel#hogerBeroep" voor "hoger beroep"</xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+  <xs:attribute name="gevolg" type="xs:anyURI">
+    <xs:annotation>
+      <xs:documentation>Het gevolg, bijvoorbeeld: "verworpen", "terugverwezen". Aangegeven door de identifier ("psi:"). Voorbeeld: gebruikt "http://psi.rechtspraak.nl/gevolg#verworpen" voor "Verworpen".</xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+  <xs:attribute name="aanleg" type="xs:anyURI">
+    <xs:annotation>
+      <xs:documentation>Aanleg geeft aan of de verwezen uitspraak in eerdere of latere aanleg, gebruikt de identifier ("psi:"). Voorbeeld: gebruikt "http://psi.rechtspraak.nl/eerdereAanleg" voor "Eerdere aanleg".</xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+</xs:schema>

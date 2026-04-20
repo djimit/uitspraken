@@ -1,0 +1,1081 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+  targetNamespace="http://www.rechtspraak.nl/schema/rechtspraak-1.0"
+  xmlns:ecli="https://e-justice.europa.eu/ecli"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:tr="http://tuchtrecht.overheid.nl/"
+  xmlns:eu="http://publications.europa.eu/celex/" xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:bwb="bwb-dl" xmlns:cvdr="http://decentrale.regelgeving.overheid.nl/cvdr/"
+  xmlns:rs="http://www.rechtspraak.nl/schema/rechtspraak-1.0" xmlns:psi="http://psi.rechtspraak.nl/"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <xs:import namespace="bwb-dl" schemaLocation="bwb.xsd"/>
+  <xs:import namespace="http://purl.org/dc/terms/" schemaLocation="open-metadata.xsd"/>
+  <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+  <xs:import namespace="https://e-justice.europa.eu/ecli" schemaLocation="ecli.xsd"/>
+  <xs:element name="content.volledig" abstract="true"/>
+  <xs:element name="content.eenvoudig" abstract="true" substitutionGroup="rs:content.volledig"/>
+  <xs:element name="content.simpel" abstract="true" substitutionGroup="rs:content.eenvoudig"/>
+  <xs:group name="content.inlines">
+    <xs:choice>
+      <xs:element ref="rs:emphasis">
+        <xs:annotation>
+          <xs:documentation>Definitie inlines voor alle situaties.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element ref="rs:footnote-ref"/>
+      <xs:element ref="rs:superscript"/>
+      <xs:element ref="rs:subscript"/>
+      <xs:element ref="rs:quote"/>
+      <xs:element ref="rs:foreignphrase"/>
+      <xs:element ref="rs:inlinemediaobject"/>
+      <xs:element ref="rs:link"/>
+    </xs:choice>
+  </xs:group>
+  <xs:group name="content.link">
+    <xs:choice>
+      <xs:element ref="rs:emphasis">
+        <xs:annotation>
+          <xs:documentation>Voor het element link geldt een afwijkende set toegestane elementen. </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element ref="rs:footnote-ref"/>
+      <xs:element ref="rs:superscript"/>
+      <xs:element ref="rs:subscript"/>
+      <xs:element ref="rs:quote"/>
+      <xs:element ref="rs:foreignphrase"/>
+      <xs:element ref="rs:inlinemediaobject"/>
+    </xs:choice>
+  </xs:group>
+  <xs:attributeGroup name="attlist.root">
+    <xs:attribute name="id" use="required" type="xs:anyURI">
+      <xs:annotation>
+        <xs:documentation>Standaard herbruikbare lijst attributen voor mogelijke root-elementen.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="ljn"/>
+    <xs:attribute name="status"/>
+    <xs:attributeGroup ref="dcterms:attlist.language"/>
+  </xs:attributeGroup>
+  <xs:element name="bridgehead" substitutionGroup="rs:content.eenvoudig">
+    <xs:annotation>
+      <xs:documentation>Een 'tussenkop' gebruikt in tekst wanneer er geen hierarchisch niveau
+binnen een tekst is bedoeld of is vast te stellen.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="rs:nr"/>
+        <xs:group ref="rs:content.inlines"/>
+      </xs:choice>
+      <xs:attribute name="role">
+        <xs:annotation>
+          <xs:documentation>Attribuut met de aanduiding hoe een element met nadruk moet worden getoond.
+Het is mogelijk om meer dan 1 waarde te selecteren als een met spaties gescheiden
+lijst (bv. "bold itelic").</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction>
+            <xs:simpleType>
+              <xs:list>
+                <xs:simpleType>
+                  <xs:restriction base="xs:token">
+                    <xs:enumeration value="italic"/>
+                    <xs:enumeration value="bold"/>
+                    <xs:enumeration value="underline"/>
+                    <xs:enumeration value="strike-through"/>
+                    <xs:enumeration value="double-underline"/>
+                    <xs:enumeration value="smallcaps"/>
+                    <xs:enumeration value="caps"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:list>
+            </xs:simpleType>
+            <xs:minLength value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="uitspraak">
+    <xs:annotation>
+      <xs:documentation>Start-element voor een uitspraak.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="rs:uitspraak.info"/>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="rs:section"/>
+          <xs:element ref="rs:content.volledig"/>
+        </xs:choice>
+        <xs:element minOccurs="0" ref="rs:ondertekening"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.root"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="conclusie">
+    <xs:annotation>
+      <xs:documentation>Start-element voor een conclusie.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="rs:conclusie.info"/>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="rs:section"/>
+          <xs:element ref="rs:content.volledig"/>
+        </xs:choice>
+        <xs:element minOccurs="0" ref="rs:ondertekening"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.root"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="samenvatting">
+    <xs:annotation>
+      <xs:documentation>Start-element voor een samenvatting</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="rs:content.eenvoudig"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.root"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ondertekening">
+    <xs:annotation>
+      <xs:documentation>Het laatste deel van een uitspraak-document (heeft geen 'title')</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="rs:content.volledig"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="uitspraak.info" type="rs:info">
+    <xs:annotation>
+      <xs:documentation>Toevoeging info elementen voor een uitspraak-document. Feitelijk het voorwerk voor een uitspraak.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="conclusie.info" type="rs:info">
+    <xs:annotation>
+      <xs:documentation>Toevoeging info-elementen voor een conclusie-document. Feitelijk het voorwerk voor een conclusie.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="info">
+    <xs:choice maxOccurs="unbounded">
+      <xs:annotation>
+        <xs:documentation>Het info-element bevat de metadata zoals dit in het document is opgenomen (gepubliceerde tekst).</xs:documentation>
+      </xs:annotation>
+      <xs:element ref="rs:instantie"/>
+      <xs:element ref="rs:afdeling"/>
+      <xs:element ref="rs:uitspraaksoort"/>
+      <xs:element ref="rs:zaaknr"/>
+      <xs:element ref="rs:plaats"/>
+      <xs:element ref="rs:partij"/>
+      <xs:element ref="rs:uitspraakdatum"/>
+      <xs:element ref="rs:content.volledig"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:element name="inhoudsindicatie">
+    <xs:annotation>
+      <xs:documentation>Start-element voor een inhoudsindicatie</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="rs:content.simpel"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.root"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="uitspraaksoort" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>uitspraaksoort = "vonnis", "arrest" etc.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="plaats" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Plaats instantie of plaats zitting.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="afdeling">
+    <xs:annotation>
+      <xs:documentation>De afdeling binnen de instantie.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="rs:para"/>
+        <xs:element ref="rs:parablock"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="instantie">
+    <xs:annotation>
+      <xs:documentation>De rechsprekende instantie (Rechtbank, Hof of Hoge Raad).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="rs:para"/>
+        <xs:element ref="rs:parablock"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="partij">
+    <xs:annotation>
+      <xs:documentation>Verzamel-element waarin 'partijen' in een rechtszaak of geding worden genoemd.
+Feitelijk een gespecialiseerde 'para'.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="rs:para"/>
+        <xs:element ref="rs:parablock"/>
+        <xs:element ref="rs:lists"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="uitspraakdatum" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>De datum waarop de uitspraak is gedaan.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="zaaknr" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Intern registratienummer van een zaak bij een instantie. Ook wel 'rolnr'.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:attributeGroup name="attlist.nn">
+    <xs:attribute name="anonymous" use="required">
+      <xs:annotation>
+        <xs:documentation>Attribuut 'anonymous' bevat de 'partij-rol' van de genoemde te anonimiseren partij of
+anderszins betrokkene.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="emphasis">
+    <xs:annotation>
+      <xs:documentation>Lijst met vaste waarden verwijderd ivm vrijheid voor anonimiseren.
+Nadruk op een tekstfragment (vet of cursief), waarbij de betekenis van de betreffende tekst niet
+kan worden vastgesteld. (display only).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="rs:content.inlines"/>
+      <xs:attributeGroup ref="rs:attlist.emphasis"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.emphasis">
+    <xs:attribute name="role" use="required">
+      <xs:annotation>
+        <xs:documentation>Attribuut met de aanduiding hoe een element met nadruk moet worden getoond.
+Het is mogelijk om meer dan 1 waarde te selecteren als een met spaties gescheiden
+lijst (bv. "bold itelic").</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction>
+          <xs:simpleType>
+            <xs:list>
+              <xs:simpleType>
+                <xs:restriction base="xs:token">
+                  <xs:enumeration value="italic"/>
+                  <xs:enumeration value="bold"/>
+                  <xs:enumeration value="underline"/>
+                  <xs:enumeration value="strike-through"/>
+                  <xs:enumeration value="double-underline"/>
+                  <xs:enumeration value="smallcaps"/>
+                  <xs:enumeration value="caps"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:list>
+          </xs:simpleType>
+          <xs:minLength value="1"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="footnote" substitutionGroup="rs:content.simpel">
+    <xs:annotation>
+      <xs:documentation>Tekst van een voetnoot. De voetnoten mogen overal worden geplaatst op het nieveau van een alinea
+(para) tekst, maar niet binnen een para.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="rs:para"/>
+        <xs:element ref="rs:lists"/>
+      </xs:choice>
+      <xs:attributeGroup ref="rs:attlist.footnote"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.footnote">
+    <xs:attribute name="id" use="required" type="xs:ID">
+      <xs:annotation>
+        <xs:documentation>Voor voetnoten worden in de tekst referenties geplaatst die verwijzen naar
+de voetnoottekst. De representatie van de noot in de tekst wordt als 'label'
+opgenomen in de markering voor voetnoottekst.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="label" use="required"/>
+  </xs:attributeGroup>
+  <xs:element name="footnote-ref">
+    <xs:annotation>
+      <xs:documentation>Referentie vanuit tekst naar de voetnoot door middel van een ID en een IDREF. XML parsers staan
+niet toe dat met een IDREF wordt verwezen naar een niet bestaand ID.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="rs:attlist.footnote-ref"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.footnote-ref">
+    <xs:attribute name="linkend" use="required" type="xs:IDREF">
+      <xs:annotation>
+        <xs:documentation>Attribuut met de waarde van het ID van de voetnoot waarnaar wordt verwezen.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="link">
+    <xs:annotation>
+      <xs:documentation>Een referentie naar een andere tekst (document), te gebruiken als een hyperlink.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="rs:content.link"/>
+      <xs:attributeGroup ref="rs:attlist.link"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.referenties">
+    <xs:attribute ref="xlink:href"/>
+    <xs:attribute ref="bwb:link"/>
+    <xs:attribute ref="ecli:link"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="attlist.referentielabels">
+    <xs:attribute ref="xlink:role"/>
+    <xs:attribute ref="xlink:label"/>
+    <xs:attribute ref="xlink:title"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="attlist.link">
+    <xs:attributeGroup ref="rs:attlist.referenties"/>
+    <xs:attributeGroup ref="rs:attlist.referentielabels"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="attlist.quotes">
+    <xs:attributeGroup ref="rs:attlist.referenties"/>
+    <xs:attributeGroup ref="rs:attlist.referentielabels"/>
+  </xs:attributeGroup>
+  <xs:element name="foreignphrase">
+    <xs:annotation>
+      <xs:documentation>een woord of frase in een andere taal dan de taal waarin het document is gesteld.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:attributeGroup ref="dcterms:attlist.language"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="superscript" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Hoog geplaatste tekst zoals bv in '2 m2' (vierkante meter).</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="subscript" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Laag geplaatste tekst zoals in 'H2O' (formule voor water).</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="para" substitutionGroup="rs:content.simpel">
+    <xs:annotation>
+      <xs:documentation>Een alinea tekst. Het meest gebruikte element in een document.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="rs:content.inlines"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="parablock" substitutionGroup="rs:content.simpel">
+    <xs:annotation>
+      <xs:documentation>Een groepering alinea's. Wanneer opeenvolgende alinea's NIET worden gescheiden door een
+'witregel', dan kunnen deze worden gegroepeerd in een parablock.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="rs:para"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="paragroup" substitutionGroup="rs:content.volledig">
+    <xs:annotation>
+      <xs:documentation>Wanneer alinea's expliciet genummerd zijn (zoals bij voorbeeld binnen de overwegingen van een
+uitspraak). Het toegevoegde element nr kan worden gebruikt om het nummer te markeren. Bovendien
+kan een ID aan de groep worden toegevoegd zodat direct naar een overweging kan worden gelinkt.
+De waarde voor het attribuut ID kan op de volgende vaste wijze worden opgebouwd: Voor een
+alineagroup met nr: '2.4' binnen overwegingen wordt het ID "OVERWEGING_2_4".</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="rs:nr"/>
+        <xs:element maxOccurs="unbounded" ref="rs:content.volledig"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.paragroup"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.paragroup">
+    <xs:attribute name="id" type="xs:ID"/>
+    <xs:attributeGroup ref="dcterms:attlist.language"/>
+  </xs:attributeGroup>
+  <xs:element name="nr" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Een nummering van bv. een lijst of alinea's die automatisch genummerd kunnen of mogen worden.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="blockquote" substitutionGroup="rs:content.eenvoudig">
+    <xs:annotation>
+      <xs:documentation>Een tekstdeel dat afkomstig is uit een ander document of publicatie. Met de link-attributen kan
+worden aangegeven uit welk document deze geciteerde tekst afkomstig is.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="rs:content.eenvoudig"/>
+        <xs:element ref="rs:informaltable"/>
+        <xs:element ref="rs:mediaobject"/>
+      </xs:choice>
+      <xs:attributeGroup ref="rs:attlist.quotes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="section">
+    <xs:annotation>
+      <xs:documentation>Een hierarchische indeling van een document (vergelijkbaar met: hoofdstuk of paragraaf).
+Een nadere aanduiding van het type kan worden gegeven in het attribuut 'role' (bijvoorbeeld:
+'overwegingen' of 'beslissing'.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="rs:title"/>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="rs:section"/>
+          <xs:element ref="rs:content.volledig"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.section"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.section">
+    <xs:attribute name="role">
+      <xs:annotation>
+        <xs:documentation>Het type van de section (of paragraaf), is niet verplicht, alleen wanneer
+de inhoud een section voldoet aan de beschrijving toe te kennen.
+NB. Indien dit niet het geval is of wanneer dit niet met zekerheid is vast te stellen
+dan SVP niet gebruiken.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="beslissing"/>
+          <xs:enumeration value="overwegingen"/>
+          <xs:enumeration value="procesverloop"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="label">
+      <xs:annotation>
+        <xs:documentation>Indien een section (of paragraaf) een benaming heeft voor een eventuele nummering
+dan kan hier dit label worden opgegeven. Voorbeelden: "Hoofdstuk", "Paragraaf", "§".</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="lists" abstract="true" substitutionGroup="rs:content.eenvoudig"/>
+  <xs:element name="inlinemediaobject">
+    <xs:annotation>
+      <xs:documentation>Afbeeldingen, audio of videofragmenten kunnen inline (in lopende tekst) worden ingevoegd.
+Een mediaobject kan meerdere ...objecten bevatten. De volgorde waarin deze zijn opgenomen bepaald
+welke van deze objecten de voorkeur heeft (de eerst genoemde). Voor nadere regels zie de
+online documentatie van docbook. http://www.docbook.org/tdg5/en/html/docbook.html</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="rs:alt"/>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="rs:audioobject"/>
+          <xs:element ref="rs:imageobject"/>
+          <xs:element ref="rs:textobject"/>
+          <xs:element ref="rs:videoobject"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="mediaobject" substitutionGroup="rs:content.volledig">
+    <xs:annotation>
+      <xs:documentation>Afbeeldingen, audio of videofragmenten kunnen worden ingevoegd als vrijstaand blok.
+Een mediaobject kan meerdere ...objecten bevatten. De volgorde waarin deze zijn opgenomen bepaald
+welke van deze objecten de voorkeur heeft (de eerst genoemde). Voor nadere regels zie de
+online documentatie van docbook. http://www.docbook.org/tdg5/en/html/docbook.html</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="rs:alt"/>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="rs:audioobject"/>
+          <xs:element ref="rs:imageobject"/>
+          <xs:element ref="rs:textobject"/>
+          <xs:element ref="rs:videoobject"/>
+        </xs:choice>
+        <xs:element minOccurs="0" ref="rs:caption"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="alt" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Alternatieve tekst voor wanneer een object niet kan worden getoond in een applicatie. Vgl. "alt"
+attribuut in html.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="caption" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Een bij- of onderschrift.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="audioobject" type="rs:audiodata"/>
+  <xs:complexType name="audiodata">
+    <xs:sequence>
+      <xs:element ref="rs:audiodata"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="audiodata">
+    <xs:complexType>
+      <xs:attributeGroup ref="rs:attlist.audiodata"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.audiodata">
+    <xs:attribute name="fileref" use="required" type="xs:anyURI"/>
+    <xs:attribute name="format" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="audio/basic"/>
+          <xs:enumeration value="audio/mp4"/>
+          <xs:enumeration value="audio/mpeg"/>
+          <xs:enumeration value="audio/ogg"/>
+          <xs:enumeration value="audio/vorbis"/>
+          <xs:enumeration value="audio/x-ms-wma"/>
+          <xs:enumeration value="audio/x-ms-wax"/>
+          <xs:enumeration value="audio/vnd.rn-realaudio"/>
+          <xs:enumeration value="audio/vnd.wave"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="imageobject" type="rs:imagedata"/>
+  <xs:complexType name="imagedata">
+    <xs:sequence>
+      <xs:element ref="rs:imagedata"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="imagedata">
+    <xs:complexType>
+      <xs:attributeGroup ref="rs:attlist.imagedata"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.imagedata">
+    <xs:attributeGroup ref="rs:content.object-attributes"/>
+    <xs:attribute name="format" default="image/jpeg">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="image/gif"/>
+          <xs:enumeration value="image/jpeg"/>
+          <xs:enumeration value="image/png"/>
+          <xs:enumeration value="image/svg+xml"/>
+          <xs:enumeration value="image/tiff"/>
+          <xs:enumeration value="application/pdf"/>
+          <xs:enumeration value="application/postscript"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="content.object-attributes">
+    <xs:attribute name="align" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="center"/>
+          <xs:enumeration value="left"/>
+          <xs:enumeration value="right"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="contentdepth" type="xs:integer"/>
+    <xs:attribute name="contentwidth" type="xs:integer"/>
+    <xs:attribute name="depth" use="required" type="xs:integer"/>
+    <xs:attribute name="width" use="required" type="xs:integer"/>
+    <xs:attribute name="fileref" use="required" type="xs:anyURI"/>
+    <xs:attribute name="scale" type="xs:positiveInteger"/>
+    <xs:attribute name="scalefit">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="0"/>
+          <xs:enumeration value="1"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="valign">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="bottom"/>
+          <xs:enumeration value="middle"/>
+          <xs:enumeration value="top"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="textobject">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="rs:textdata"/>
+        <xs:element maxOccurs="unbounded" ref="rs:content.simpel"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="textdata">
+    <xs:complexType>
+      <xs:attributeGroup ref="rs:attlist.textdata"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.textdata">
+    <xs:attribute name="fileref" use="required" type="xs:anyURI"/>
+    <xs:attribute name="encoding" default="UTF-8">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="UTF-8"/>
+          <xs:enumeration value="UTF-16"/>
+          <xs:enumeration value="ISO-8859-1"/>
+          <xs:enumeration value="US-ASCII"/>
+          <xs:enumeration value="windows-1252"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="format" default="text/xml">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="text/html"/>
+          <xs:enumeration value="application/xhtml+xml"/>
+          <xs:enumeration value="text/plain"/>
+          <xs:enumeration value="text/xml"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="videoobject" type="rs:videodata"/>
+  <xs:complexType name="videodata">
+    <xs:sequence>
+      <xs:element ref="rs:videodata"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="videodata">
+    <xs:complexType>
+      <xs:attributeGroup ref="rs:attlist.videodata"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.videodata">
+    <xs:attributeGroup ref="rs:content.object-attributes"/>
+    <xs:attribute name="format" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="video/mpeg"/>
+          <xs:enumeration value="video/mp4"/>
+          <xs:enumeration value="video/ogg"/>
+          <xs:enumeration value="video/quicktime"/>
+          <xs:enumeration value="video/webm"/>
+          <xs:enumeration value="video/x-ms-wmv"/>
+          <xs:enumeration value="application/x-shockwave-flash"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="orderedlist" substitutionGroup="rs:lists">
+    <xs:annotation>
+      <xs:documentation>Een genummerde lijst of opsomming.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="rs:title"/>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="rs:listitem"/>
+          <xs:element ref="rs:lists"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.ordered"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="itemizedlist" substitutionGroup="rs:lists">
+    <xs:annotation>
+      <xs:documentation>Een ongenummerde lijst of opsomming. Het voorloop-symbool (bullet) kan
+worden aangegeven in het attribuut "mark".</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="rs:title"/>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="rs:listitem"/>
+          <xs:element ref="rs:lists"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.itemized"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.itemized">
+    <xs:attribute name="mark" use="required">
+      <xs:annotation>
+        <xs:documentation>voorloop-symbool (bullet) voor ongenummerde lijsten kan worden aangegeven in dit attribuut.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="attlist.ordered">
+    <xs:attribute name="continuation">
+      <xs:annotation>
+        <xs:documentation>Nummering van een lijst begint weer bij 1, of doornummeren vorige lijst.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="continues"/>
+          <xs:enumeration value="restarts"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="startingnumber" type="xs:positiveInteger">
+      <xs:annotation>
+        <xs:documentation>Indien een lijst met een willekeurig nummer begint...</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="inheritnum">
+      <xs:annotation>
+        <xs:documentation>Indien nummering 'hierarchisch' is (als in "1.2.3.") </xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="inherit"/>
+          <xs:enumeration value="ignore"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="numeration" use="required">
+      <xs:annotation>
+        <xs:documentation>Type nummering (als: "1", "A", "a", "I", "i").
+Indien de nummering exliciet wordt opgenomen in een nr-element voor een listitem dan moet
+de waarde "none" worden gekozen, anders wordt de lijst bij presentatie ook nog automatisch genummerd met het
+geselecteerde type nummering. </xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="arabic">
+            <xs:annotation>
+              <xs:documentation>Arabische nummering - 1. 2, 3 etc.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="upperalpha">
+            <xs:annotation>
+              <xs:documentation>Alfabetische nummering met hoofdletters (kapitalen) - A, B, C, etc.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="loweralpha">
+            <xs:annotation>
+              <xs:documentation>Alfabetische nummering met kleine leters - a, b, c, etc.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="upperroman">
+            <xs:annotation>
+              <xs:documentation>Romeinse nummering met hoofdletters (kapitalen) - I, II, III, etc.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="lowerroman">
+            <xs:annotation>
+              <xs:documentation>Romeinse nummering met kleine letters - i, ii, iii, etc.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="none">
+            <xs:annotation>
+              <xs:documentation>Geen automatische nummering - gebruik het nr-element van de listitem voor de nummers.</xs:documentation>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="listitem">
+    <xs:annotation>
+      <xs:documentation>Een onderdeel van een lijst.
+NB. Alleen indien het een orderedlist betreft met numeration="none" dan mag het element 'nr' worden gebruikt.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="rs:nr"/>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="rs:para"/>
+          <xs:element ref="rs:lists"/>
+          <xs:element ref="rs:blockquote"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="title">
+    <xs:annotation>
+      <xs:documentation>Een titel voor bv een section, table of list.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="rs:nr"/>
+        <xs:group minOccurs="0" maxOccurs="unbounded" ref="rs:content.inlines"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="quote">
+    <xs:annotation>
+      <xs:documentation>Een aanhaling of citaat in lopende tekst. Het is mogelijk om met attributen aan te geven wat de bron van de quote is.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType mixed="true">
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="rs:content.inlines"/>
+      <xs:attributeGroup ref="rs:attlist.quotes"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    Start definities voor tabellen.
+    Twee soorten tabellen zijn beschikbaar ('informaltable' is de default).
+  -->
+  <xs:element name="informaltable" substitutionGroup="rs:content.volledig">
+    <xs:annotation>
+      <xs:documentation>Een tabel zonder titel (titel verboden).
+Voor documentatie zie: http://www.docbook.org/tdg5/en/html/docbook.html</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="rs:tgroup"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.table"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="table" substitutionGroup="rs:content.volledig">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="rs:title">
+          <xs:annotation>
+            <xs:documentation>Een tabel met een verplichte titel.
+Voor documentatie zie: http://www.docbook.org/tdg5/en/html/docbook.html.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element maxOccurs="unbounded" ref="rs:tgroup"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.table"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.table">
+    <xs:attributeGroup ref="rs:align"/>
+    <xs:attributeGroup ref="rs:valign"/>
+    <xs:attribute name="border">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="1"/>
+          <xs:enumeration value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="tgroup">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="rs:colspec"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="rs:spanspec"/>
+        <xs:element minOccurs="0" ref="rs:thead"/>
+        <xs:element minOccurs="0" ref="rs:tfoot"/>
+        <xs:element ref="rs:tbody"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.tgroup"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.tgroup">
+    <xs:attribute name="align" default="left">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="center"/>
+          <xs:enumeration value="char"/>
+          <xs:enumeration value="left"/>
+          <xs:enumeration value="right"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="char"/>
+    <xs:attribute name="charoff" type="xs:decimal"/>
+    <xs:attribute name="cols" type="xs:positiveInteger"/>
+    <xs:attribute name="colsep" default="0">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="1"/>
+          <xs:enumeration value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="rowsep" default="1">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="1"/>
+          <xs:enumeration value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="tgroupstyle"/>
+  </xs:attributeGroup>
+  <xs:element name="colspec">
+    <xs:complexType>
+      <xs:attributeGroup ref="rs:attlist.colspec"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.colspec">
+    <xs:attribute name="align" default="left">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="center"/>
+          <xs:enumeration value="char"/>
+          <xs:enumeration value="left"/>
+          <xs:enumeration value="right"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="char"/>
+    <xs:attribute name="charoff" type="xs:decimal"/>
+    <xs:attribute name="colname"/>
+    <xs:attribute name="colnum" type="xs:positiveInteger"/>
+    <xs:attribute name="colsep" default="0">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="1"/>
+          <xs:enumeration value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="colwidth"/>
+    <xs:attribute name="rowsep" default="1">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="1"/>
+          <xs:enumeration value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="spanspec">
+    <xs:complexType>
+      <xs:attributeGroup ref="rs:attlist.spanspec"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.spanspec">
+    <xs:attributeGroup ref="rs:align"/>
+    <xs:attribute name="char"/>
+    <xs:attribute name="charoff" type="xs:decimal"/>
+    <xs:attributeGroup ref="rs:colsep"/>
+    <xs:attributeGroup ref="rs:rowsep"/>
+    <xs:attribute name="nameend" use="required"/>
+    <xs:attribute name="namest" use="required"/>
+    <xs:attribute name="spanname" use="required"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="align">
+    <xs:attribute name="align">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="center"/>
+          <xs:enumeration value="char"/>
+          <xs:enumeration value="left"/>
+          <xs:enumeration value="right"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="colsep">
+    <xs:attribute name="colsep">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="1"/>
+          <xs:enumeration value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="thead">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="rs:row"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.thead"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.thead">
+    <xs:attributeGroup ref="rs:valign"/>
+    <xs:attributeGroup ref="rs:align"/>
+  </xs:attributeGroup>
+  <xs:element name="tfoot">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="rs:row"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.tfoot"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.tfoot">
+    <xs:attributeGroup ref="rs:valign"/>
+    <xs:attributeGroup ref="rs:align"/>
+  </xs:attributeGroup>
+  <xs:element name="tbody">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="rs:row"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.tbody"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.tbody">
+    <xs:attributeGroup ref="rs:valign"/>
+    <xs:attributeGroup ref="rs:align"/>
+  </xs:attributeGroup>
+  <xs:element name="row">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="rs:entry"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="rs:attlist.row"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.row">
+    <xs:attributeGroup ref="rs:valign"/>
+    <xs:attributeGroup ref="rs:rowsep"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="valign">
+    <xs:attribute name="valign">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="top"/>
+          <xs:enumeration value="bottom"/>
+          <xs:enumeration value="middle"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="rowsep">
+    <xs:attribute name="rowsep">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="1"/>
+          <xs:enumeration value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="entry">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="rs:para"/>
+        <xs:element ref="rs:mediaobject"/>
+      </xs:choice>
+      <xs:attributeGroup ref="rs:attlist.entry"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attlist.entry">
+    <xs:attributeGroup ref="rs:valign"/>
+    <xs:attributeGroup ref="rs:rowsep"/>
+    <xs:attributeGroup ref="rs:colsep"/>
+    <xs:attributeGroup ref="rs:align"/>
+    <xs:attribute name="char"/>
+    <xs:attribute name="charoff" type="xs:decimal"/>
+    <xs:attribute name="morerows" type="xs:integer"/>
+    <xs:attribute name="rotate">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="1"/>
+          <xs:enumeration value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="namest"/>
+    <xs:attribute name="nameend"/>
+    <xs:attribute name="colname"/>
+    <xs:attribute name="spanname"/>
+  </xs:attributeGroup>
+</xs:schema>

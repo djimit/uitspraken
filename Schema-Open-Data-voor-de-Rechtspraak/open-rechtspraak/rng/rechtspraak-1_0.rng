@@ -1,0 +1,1266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="http://www.rechtspraak.nl/schema/rechtspraak-1.0" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ecli="https://e-justice.europa.eu/ecli" xmlns:bwb="bwb-dl" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <a:documentation>Schema: rechtspraak-1_0.rnc
+Versie: 1.0
+Datum creatie: 2010-12-01</a:documentation>
+    <a:documentation>Basis-schema voor jurisprudentie: uitspraken, conclusies, inhoudsindicaties en
+samenvattingen. Kan worden uitgebreid of gevarieerd door vanuit een nieuw schema deze te importeren
+en definities in dit schema aan te vullen of the herzien.</a:documentation>
+    <a:documentation>Gebaseerd op: Docbook 5.0, subset gebruikt en enige lokale aanpassingen waaronder specifiek
+benoemde root-elementen.
+Documentatie Docbook: http://www.docbook.org/tdg5/en/html/docbook.html</a:documentation>
+    <choice>
+      <ref name="uitspraak"/>
+      <ref name="samenvatting"/>
+      <ref name="inhoudsindicatie"/>
+      <ref name="conclusie"/>
+    </choice>
+  </start>
+  <define name="content.volledig">
+    <choice>
+      <ref name="content.eenvoudig">
+        <a:documentation>Contentdefinitie (model groups) voor algemeen gebruik.
+De groepen worden 'getrapt' ingelezen. content.volledig is het meest uitgebreide model.</a:documentation>
+      </ref>
+      <ref name="table"/>
+      <ref name="informaltable"/>
+      <ref name="mediaobject"/>
+      <ref name="paragroup"/>
+    </choice>
+  </define>
+  <define name="content.eenvoudig">
+    <choice>
+      <ref name="content.simpel">
+        <a:documentation>Contentdefinitie (model groups) voor algemeen gebruik.
+De groepen worden 'getrapt' ingelezen. content.eenvoudig is het meest gebruikte model.</a:documentation>
+      </ref>
+      <ref name="lists"/>
+      <ref name="bridgehead"/>
+      <ref name="blockquote"/>
+    </choice>
+  </define>
+  <define name="content.simpel">
+    <choice>
+      <ref name="para">
+        <a:documentation>Contentdefinitie (model groups) voor algemeen gebruik.
+De groepen worden 'getrapt' ingelezen. content.simpel is het eenvoudigste model.</a:documentation>
+      </ref>
+      <ref name="parablock"/>
+      <ref name="footnote"/>
+    </choice>
+  </define>
+  <define name="content.inlines">
+    <choice>
+      <ref name="emphasis">
+        <a:documentation>Definitie inlines voor alle situaties.</a:documentation>
+      </ref>
+      <ref name="footnote-ref"/>
+      <ref name="superscript"/>
+      <ref name="subscript"/>
+      <ref name="nn"/>
+      <ref name="quote"/>
+      <ref name="foreignphrase"/>
+      <ref name="inlinemediaobject"/>
+      <ref name="link"/>
+    </choice>
+  </define>
+  <define name="content.link">
+    <choice>
+      <ref name="emphasis">
+        <a:documentation>Voor het element link geldt een afwijkende set toegestane elementen. </a:documentation>
+      </ref>
+      <ref name="footnote-ref"/>
+      <ref name="superscript"/>
+      <ref name="subscript"/>
+      <ref name="nn"/>
+      <ref name="quote"/>
+      <ref name="foreignphrase"/>
+      <ref name="inlinemediaobject"/>
+    </choice>
+  </define>
+  <define name="attlist.root">
+    <attribute name="id">
+      <a:documentation>Standaard herbruikbare lijst attributen voor mogelijke root-elementen.</a:documentation>
+      <data type="anyURI"/>
+    </attribute>
+    <optional>
+      <attribute name="ljn"/>
+    </optional>
+    <optional>
+      <attribute name="status"/>
+    </optional>
+    <ref name="attlist.language"/>
+  </define>
+  <define name="extend.attlist.legacy">
+    <empty/>
+  </define>
+  <define name="attlist.language">
+    <a:documentation>Standaard herbruikbare lijst taalaanduidingen volgens ISO-639</a:documentation>
+    <attribute name="lang">
+      <a:documentation>Taalaanduiding als de eenvoudige ISO-639 (twee-letter codes) afkortingen. Lijst zal in ieder geval alle  officiële Europese talen moeten bevatten.</a:documentation>
+      <choice>
+        <value>bg</value>
+        <a:documentation>Bulgaars</a:documentation>
+        <value>cs</value>
+        <a:documentation>Tsjechisch</a:documentation>
+        <value>da</value>
+        <a:documentation>Deens		</a:documentation>
+        <value>en</value>
+        <a:documentation>Engels</a:documentation>
+        <value>de</value>
+        <a:documentation>Duits</a:documentation>
+        <value>et</value>
+        <a:documentation>Ests</a:documentation>
+        <value>el</value>
+        <a:documentation>Grieks</a:documentation>
+        <value>es</value>
+        <a:documentation>Spaans</a:documentation>
+        <value>fr</value>
+        <a:documentation>Frans</a:documentation>
+        <value>ga</value>
+        <a:documentation>Iers</a:documentation>
+        <value>it</value>
+        <a:documentation>Italiaans</a:documentation>
+        <value>lv</value>
+        <a:documentation>Lets</a:documentation>
+        <value>lt</value>
+        <a:documentation>Litouws</a:documentation>
+        <value>hu</value>
+        <a:documentation>Hongaars</a:documentation>
+        <value>mt</value>
+        <a:documentation>Maltees</a:documentation>
+        <value>nl</value>
+        <a:documentation>Nederlands</a:documentation>
+        <value>pl</value>
+        <a:documentation>Pools</a:documentation>
+        <value>pt</value>
+        <a:documentation>Portugees</a:documentation>
+        <value>ro</value>
+        <a:documentation>Roemeens</a:documentation>
+        <value>sk</value>
+        <a:documentation>Slowaaks</a:documentation>
+        <value>sl</value>
+        <a:documentation>Sloveens</a:documentation>
+        <value>fi</value>
+        <a:documentation>Fins</a:documentation>
+        <value>sv</value>
+        <a:documentation>Zweeds</a:documentation>
+      </choice>
+    </attribute>
+  </define>
+  <define name="bridgehead">
+    <element name="bridgehead">
+      <a:documentation>Een 'tussenkop' gebruikt in tekst wanneer er geen hierarchisch niveau
+binnen een tekst is bedoeld of is vast te stellen.</a:documentation>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="nr"/>
+          <ref name="content.inlines"/>
+        </choice>
+      </zeroOrMore>
+      <optional>
+        <ref name="attlist.emphasis"/>
+      </optional>
+    </element>
+  </define>
+  <define name="uitspraak">
+    <element name="uitspraak">
+      <a:documentation>Start-element voor een uitspraak.</a:documentation>
+      <optional>
+        <ref name="uitspraak.info"/>
+      </optional>
+      <oneOrMore>
+        <choice>
+          <ref name="section"/>
+          <ref name="content.volledig"/>
+        </choice>
+      </oneOrMore>
+      <optional>
+        <ref name="ondertekening"/>
+      </optional>
+      <ref name="attlist.root"/>
+      <ref name="extend.attlist.legacy"/>
+    </element>
+  </define>
+  <define name="conclusie">
+    <element name="conclusie">
+      <a:documentation>Start-element voor een conclusie.</a:documentation>
+      <optional>
+        <ref name="conclusie.info"/>
+      </optional>
+      <oneOrMore>
+        <choice>
+          <ref name="section"/>
+          <ref name="content.volledig"/>
+        </choice>
+      </oneOrMore>
+      <optional>
+        <ref name="ondertekening"/>
+      </optional>
+      <ref name="attlist.root"/>
+      <ref name="extend.attlist.legacy"/>
+    </element>
+  </define>
+  <define name="samenvatting">
+    <element name="samenvatting">
+      <a:documentation>Start-element voor een samenvatting</a:documentation>
+      <oneOrMore>
+        <ref name="content.eenvoudig"/>
+      </oneOrMore>
+      <ref name="attlist.root"/>
+    </element>
+  </define>
+  <define name="ondertekening">
+    <element name="ondertekening">
+      <a:documentation>Het laatste deel van een uitspraak-document (heeft geen 'title')</a:documentation>
+      <oneOrMore>
+        <ref name="content.volledig"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="uitspraak.info">
+    <element name="uitspraak.info">
+      <a:documentation>Toevoeging info elementen voor een uitspraak-document. Feitelijk het voorwerk voor een uitspraak.</a:documentation>
+      <ref name="info"/>
+    </element>
+  </define>
+  <define name="conclusie.info">
+    <element name="conclusie.info">
+      <a:documentation>Toevoeging info-elementen voor een conclusie-document. Feitelijk het voorwerk voor een conclusie.</a:documentation>
+      <ref name="info"/>
+    </element>
+  </define>
+  <define name="info">
+    <oneOrMore>
+      <choice>
+        <a:documentation>Het info-element bevat de metadata zoals dit in het document is opgenomen (gepubliceerde tekst).</a:documentation>
+        <ref name="instantie"/>
+        <ref name="afdeling"/>
+        <ref name="uitspraaksoort"/>
+        <ref name="zaaknr"/>
+        <ref name="plaats"/>
+        <ref name="partij"/>
+        <ref name="uitspraakdatum"/>
+        <ref name="content.volledig"/>
+      </choice>
+    </oneOrMore>
+  </define>
+  <define name="inhoudsindicatie">
+    <element name="inhoudsindicatie">
+      <a:documentation>Start-element voor een inhoudsindicatie</a:documentation>
+      <oneOrMore>
+        <ref name="content.simpel"/>
+      </oneOrMore>
+      <ref name="attlist.root"/>
+    </element>
+  </define>
+  <define name="uitspraaksoort">
+    <element name="uitspraaksoort">
+      <a:documentation>uitspraaksoort = "vonnis", "arrest" etc.</a:documentation>
+      <text/>
+    </element>
+  </define>
+  <define name="plaats">
+    <element name="plaats">
+      <a:documentation>Plaats instantie of plaats zitting.</a:documentation>
+      <text/>
+    </element>
+  </define>
+  <define name="afdeling">
+    <element name="afdeling">
+      <a:documentation>De afdeling binnen de instantie.</a:documentation>
+      <oneOrMore>
+        <choice>
+          <ref name="para"/>
+          <ref name="parablock"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="instantie">
+    <element name="instantie">
+      <a:documentation>De rechsprekende instantie (Rechtbank, Hof of Hoge Raad).</a:documentation>
+      <oneOrMore>
+        <choice>
+          <ref name="para"/>
+          <ref name="parablock"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="partij">
+    <element name="partij">
+      <a:documentation>Verzamel-element waarin 'partijen' in een rechtszaak of geding worden genoemd.
+Feitelijk een gespecialiseerde 'para'.</a:documentation>
+      <oneOrMore>
+        <choice>
+          <ref name="para"/>
+          <ref name="parablock"/>
+          <ref name="lists"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="uitspraakdatum">
+    <element name="uitspraakdatum">
+      <a:documentation>De datum waarop de uitspraak is gedaan.</a:documentation>
+      <text/>
+    </element>
+  </define>
+  <define name="zaaknr">
+    <element name="zaaknr">
+      <a:documentation>Intern registratienummer van een zaak bij een instantie. Ook wel 'rolnr'.</a:documentation>
+      <text/>
+    </element>
+  </define>
+  <define name="nn">
+    <a:documentation>Geanonimiseerd tekstdeel. Als tekst in het element wordt de oorspronkelijke tekst opgenomen. In het attribuut
+'anonymous' wordt de geanonimiseerde term opgenomen, indien de tekst geanonimiseerd moet worden.</a:documentation>
+    <element name="nn">
+      <text/>
+      <ref name="attlist.nn"/>
+    </element>
+  </define>
+  <define name="attlist.nn">
+    <attribute name="anonymous">
+      <a:documentation>Attribuut 'anonymous' bevat de 'partij-rol' van de genoemde te anonimiseren partij of
+anderszins betrokkene.</a:documentation>
+    </attribute>
+  </define>
+  <define name="emphasis">
+    <element name="emphasis">
+      <a:documentation>Lijst met vaste waarden verwijderd ivm vrijheid voor anonimiseren.
+Nadruk op een tekstfragment (vet of cursief), waarbij de betekenis van de betreffende tekst niet
+kan worden vastgesteld. (display only).</a:documentation>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="content.inlines"/>
+        </choice>
+      </zeroOrMore>
+      <ref name="attlist.emphasis"/>
+    </element>
+  </define>
+  <define name="attlist.emphasis">
+    <attribute name="role">
+      <a:documentation>Attribuut met de aanduiding hoe een element met nadruk moet worden getoond.
+Het is mogelijk om meer dan 1 waarde te selecteren als een met spaties gescheiden
+lijst (bv. "bold itelic").</a:documentation>
+      <list>
+        <oneOrMore>
+          <choice>
+            <value>italic</value>
+            <value>bold</value>
+            <value>underline</value>
+            <value>strike-through</value>
+            <value>double-underline</value>
+            <value>smallcaps</value>
+            <value>caps</value>
+          </choice>
+        </oneOrMore>
+      </list>
+    </attribute>
+  </define>
+  <define name="footnote">
+    <element name="footnote">
+      <a:documentation>Tekst van een voetnoot. De voetnoten mogen overal worden geplaatst op het nieveau van een alinea
+(para) tekst, maar niet binnen een para.</a:documentation>
+      <oneOrMore>
+        <choice>
+          <ref name="para"/>
+          <ref name="lists"/>
+        </choice>
+      </oneOrMore>
+      <ref name="attlist.footnote"/>
+    </element>
+  </define>
+  <define name="attlist.footnote">
+    <attribute name="id">
+      <a:documentation>Voor voetnoten worden in de tekst referenties geplaatst die verwijzen naar
+de voetnoottekst. De representatie van de noot in de tekst wordt als 'label'
+opgenomen in de markering voor voetnoottekst.</a:documentation>
+      <data type="ID"/>
+    </attribute>
+    <attribute name="label"/>
+  </define>
+  <define name="footnote-ref">
+    <element name="footnote-ref">
+      <a:documentation>Referentie vanuit tekst naar de voetnoot door middel van een ID en een IDREF. XML parsers staan
+niet toe dat met een IDREF wordt verwezen naar een niet bestaand ID.</a:documentation>
+      <empty/>
+      <ref name="attlist.footnote-ref"/>
+    </element>
+  </define>
+  <define name="attlist.footnote-ref">
+    <attribute name="linkend">
+      <a:documentation>Attribuut met de waarde van het ID van de voetnoot waarnaar wordt verwezen.</a:documentation>
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+  <define name="link">
+    <element name="link">
+      <a:documentation>Een referentie naar een andere tekst (document), te gebruiken als een hyperlink.</a:documentation>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="content.link"/>
+        </choice>
+      </zeroOrMore>
+      <ref name="attlist.link"/>
+    </element>
+  </define>
+  <define name="attlist.referenties">
+    <choice>
+      <a:documentation>Attributen voor het vastleggen van referenties in de tekst (oa elementen link en blockquote).
+href bevat het adres (of identifier) waar de verwezen tekst is te vinden. In het 'role' attribuut
+kan worden vastgelegd wat de aard van de link is (voorbeeld: 'wetgeving' of 'uitspraak').
+Het attibuut 'label' bevat de tekst die getoont kan worden indien de link tag zelf geen tekst
+omvat.</a:documentation>
+      <attribute name="xlink:href">
+        <data type="anyURI"/>
+      </attribute>
+      <attribute name="bwb:link">
+        <data type="anyURI"/>
+      </attribute>
+      <attribute name="ecli:link">
+        <data type="anyURI"/>
+      </attribute>
+    </choice>
+  </define>
+  <define name="attlist.referentielabels">
+    <optional>
+      <attribute name="xlink:role">
+        <a:documentation>Attributen voor het vastleggen van referenties in de tekst (oa elementen link en blockquote).
+href bevat het adres (of identifier) waar de verwezen tekst is te vinden. In het 'role' attribuut
+kan worden vastgelegd wat de aard van de link is (voorbeeld: 'wetgeving' of 'uitspraak').
+Het attibuut 'label' bevat de tekst die getoont kan worden indien de link tag zelf geen tekst
+omvat.</a:documentation>
+        <data type="anyURI"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="xlink:label"/>
+    </optional>
+    <optional>
+      <attribute name="xlink:title"/>
+    </optional>
+  </define>
+  <define name="attlist.link">
+    <ref name="attlist.referenties"/>
+    <ref name="attlist.referentielabels"/>
+  </define>
+  <define name="attlist.quotes">
+    <optional>
+      <ref name="attlist.referenties"/>
+    </optional>
+    <ref name="attlist.referentielabels"/>
+  </define>
+  <define name="foreignphrase">
+    <element name="foreignphrase">
+      <a:documentation>een woord of frase in een andere taal dan de taal waarin het document is gesteld.</a:documentation>
+      <text/>
+      <ref name="attlist.language"/>
+    </element>
+  </define>
+  <define name="superscript">
+    <element name="superscript">
+      <a:documentation>Hoog geplaatste tekst zoals bv in '2 m2' (vierkante meter).</a:documentation>
+      <text/>
+    </element>
+  </define>
+  <define name="subscript">
+    <element name="subscript">
+      <a:documentation>Laag geplaatste tekst zoals in 'H2O' (formule voor water).</a:documentation>
+      <text/>
+    </element>
+  </define>
+  <define name="para">
+    <element name="para">
+      <a:documentation>Een alinea tekst. Het meest gebruikte element in een document.</a:documentation>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="content.inlines"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="parablock">
+    <element name="parablock">
+      <a:documentation>Een groepering alinea's. Wanneer opeenvolgende alinea's NIET worden gescheiden door een
+'witregel', dan kunnen deze worden gegroepeerd in een parablock.</a:documentation>
+      <oneOrMore>
+        <ref name="para"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="paragroup">
+    <element name="paragroup">
+      <a:documentation>Wanneer alinea's expliciet genummerd zijn (zoals bij voorbeeld binnen de overwegingen van een
+uitspraak). Het toegevoegde element nr kan worden gebruikt om het nummer te markeren. Bovendien
+kan een ID aan de groep worden toegevoegd zodat direct naar een overweging kan worden gelinkt.
+De waarde voor het attribuut ID kan op de volgende vaste wijze worden opgebouwd: Voor een
+alineagroup met nr: '2.4' binnen overwegingen wordt het ID "OVERWEGING_2_4".</a:documentation>
+      <group>
+        <optional>
+          <ref name="nr"/>
+        </optional>
+        <oneOrMore>
+          <ref name="content.volledig"/>
+        </oneOrMore>
+      </group>
+      <ref name="attlist.paragroup"/>
+    </element>
+  </define>
+  <define name="attlist.paragroup">
+    <optional>
+      <attribute name="id">
+        <data type="ID"/>
+      </attribute>
+    </optional>
+    <optional>
+      <ref name="attlist.language"/>
+    </optional>
+  </define>
+  <define name="nr">
+    <element name="nr">
+      <a:documentation>Een nummering van bv. een lijst of alinea's die automatisch genummerd kunnen of mogen worden.</a:documentation>
+      <text/>
+    </element>
+  </define>
+  <define name="blockquote">
+    <element name="blockquote">
+      <a:documentation>Een tekstdeel dat afkomstig is uit een ander document of publicatie. Met de link-attributen kan
+worden aangegeven uit welk document deze geciteerde tekst afkomstig is.</a:documentation>
+      <oneOrMore>
+        <choice>
+          <ref name="content.eenvoudig"/>
+          <ref name="informaltable"/>
+          <ref name="mediaobject"/>
+        </choice>
+      </oneOrMore>
+      <optional>
+        <ref name="attlist.quotes"/>
+      </optional>
+    </element>
+  </define>
+  <define name="section">
+    <element name="section">
+      <a:documentation>Een hierarchische indeling van een document (vergelijkbaar met: hoofdstuk of paragraaf).
+Een nadere aanduiding van het type kan worden gegeven in het attribuut 'role' (bijvoorbeeld:
+'overwegingen' of 'beslissing'.</a:documentation>
+      <ref name="title"/>
+      <oneOrMore>
+        <choice>
+          <ref name="section"/>
+          <ref name="content.volledig"/>
+        </choice>
+      </oneOrMore>
+      <ref name="attlist.section"/>
+    </element>
+  </define>
+  <define name="attlist.section">
+    <optional>
+      <attribute name="role">
+        <a:documentation>Het type van de section (of paragraaf), is niet verplicht, alleen wanneer
+de inhoud een section voldoet aan de beschrijving toe te kennen.
+NB. Indien dit niet het geval is of wanneer dit niet met zekerheid is vast te stellen
+dan SVP niet gebruiken.</a:documentation>
+        <choice>
+          <value>beslissing</value>
+          <value>overwegingen</value>
+          <value>procesverloop</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="label">
+        <a:documentation>Indien een section (of paragraaf) een benaming heeft voor een eventuele nummering
+dan kan hier dit label worden opgegeven. Voorbeelden: "Hoofdstuk", "Paragraaf", "§".</a:documentation>
+      </attribute>
+    </optional>
+  </define>
+  <define name="lists">
+    <choice>
+      <ref name="orderedlist">
+        <a:documentation>Een voorziening om in een keer alle lijsttypen in een modelgroup in te voegen.</a:documentation>
+      </ref>
+      <ref name="itemizedlist"/>
+    </choice>
+  </define>
+  <define name="inlinemediaobject">
+    <element name="inlinemediaobject">
+      <a:documentation>Afbeeldingen, audio of videofragmenten kunnen inline (in lopende tekst) worden ingevoegd.
+Een mediaobject kan meerdere ...objecten bevatten. De volgorde waarin deze zijn opgenomen bepaald
+welke van deze objecten de voorkeur heeft (de eerst genoemde). Voor nadere regels zie de
+online documentatie van docbook. http://www.docbook.org/tdg5/en/html/docbook.html</a:documentation>
+      <optional>
+        <ref name="alt"/>
+      </optional>
+      <oneOrMore>
+        <choice>
+          <ref name="audioobject"/>
+          <ref name="imageobject"/>
+          <ref name="textobject"/>
+          <ref name="videoobject"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="mediaobject">
+    <element name="mediaobject">
+      <a:documentation>Afbeeldingen, audio of videofragmenten kunnen worden ingevoegd als vrijstaand blok.
+Een mediaobject kan meerdere ...objecten bevatten. De volgorde waarin deze zijn opgenomen bepaald
+welke van deze objecten de voorkeur heeft (de eerst genoemde). Voor nadere regels zie de
+online documentatie van docbook. http://www.docbook.org/tdg5/en/html/docbook.html</a:documentation>
+      <optional>
+        <ref name="alt"/>
+      </optional>
+      <oneOrMore>
+        <choice>
+          <ref name="audioobject"/>
+          <ref name="imageobject"/>
+          <ref name="textobject"/>
+          <ref name="videoobject"/>
+        </choice>
+      </oneOrMore>
+      <optional>
+        <ref name="caption"/>
+      </optional>
+    </element>
+  </define>
+  <define name="alt">
+    <element name="alt">
+      <a:documentation>Alternatieve tekst voor wanneer een object niet kan worden getoond in een applicatie. Vgl. "alt"
+attribuut in html.</a:documentation>
+      <text/>
+    </element>
+  </define>
+  <define name="caption">
+    <element name="caption">
+      <a:documentation>Een bij- of onderschrift.</a:documentation>
+      <text/>
+    </element>
+  </define>
+  <define name="audioobject">
+    <element name="audioobject">
+      <ref name="audiodata"/>
+    </element>
+  </define>
+  <define name="audiodata">
+    <element name="audiodata">
+      <empty/>
+      <ref name="attlist.audiodata"/>
+    </element>
+  </define>
+  <define name="attlist.audiodata">
+    <attribute name="fileref">
+      <data type="anyURI"/>
+    </attribute>
+    <attribute name="format">
+      <choice>
+        <value>audio/basic</value>
+        <value>audio/mp4</value>
+        <value>audio/mpeg</value>
+        <value>audio/ogg</value>
+        <value>audio/vorbis</value>
+        <value>audio/x-ms-wma</value>
+        <value>audio/x-ms-wax</value>
+        <value>audio/vnd.rn-realaudio</value>
+        <value>audio/vnd.wave</value>
+      </choice>
+    </attribute>
+  </define>
+  <define name="imageobject">
+    <element name="imageobject">
+      <ref name="imagedata"/>
+    </element>
+  </define>
+  <define name="imagedata">
+    <element name="imagedata">
+      <empty/>
+      <ref name="attlist.imagedata"/>
+    </element>
+  </define>
+  <define name="attlist.imagedata">
+    <ref name="content.object-attributes"/>
+    <optional>
+      <attribute name="format" a:defaultValue="image/jpeg">
+        <choice>
+          <value>image/gif</value>
+          <value>image/jpeg</value>
+          <value>image/png</value>
+          <value>image/svg+xml</value>
+          <value>image/tiff</value>
+          <value>application/pdf</value>
+          <value>application/postscript</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="content.object-attributes">
+    <attribute name="align">
+      <choice>
+        <value>center</value>
+        <value>left</value>
+        <value>right</value>
+      </choice>
+    </attribute>
+    <optional>
+      <attribute name="contentdepth">
+        <data type="integer"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="contentwidth">
+        <data type="integer"/>
+      </attribute>
+    </optional>
+    <attribute name="depth">
+      <data type="integer"/>
+    </attribute>
+    <attribute name="width">
+      <data type="integer"/>
+    </attribute>
+    <attribute name="fileref">
+      <data type="anyURI"/>
+    </attribute>
+    <optional>
+      <attribute name="scale">
+        <data type="positiveInteger"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="scalefit">
+        <choice>
+          <value>0</value>
+          <value>1</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="valign">
+        <choice>
+          <value>bottom</value>
+          <value>middle</value>
+          <value>top</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="textobject">
+    <element name="textobject">
+      <choice>
+        <ref name="textdata"/>
+        <oneOrMore>
+          <ref name="content.simpel"/>
+        </oneOrMore>
+      </choice>
+    </element>
+  </define>
+  <define name="textdata">
+    <element name="textdata">
+      <empty/>
+      <ref name="attlist.textdata"/>
+    </element>
+  </define>
+  <define name="attlist.textdata">
+    <attribute name="fileref">
+      <data type="anyURI"/>
+    </attribute>
+    <optional>
+      <attribute name="encoding" a:defaultValue="UTF-8">
+        <choice>
+          <value>UTF-8</value>
+          <value>UTF-16</value>
+          <value>ISO-8859-1</value>
+          <value>US-ASCII</value>
+          <value>windows-1252</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="format" a:defaultValue="text/xml">
+        <choice>
+          <value>text/html</value>
+          <value>application/xhtml+xml</value>
+          <value>text/plain</value>
+          <value>text/xml</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="videoobject">
+    <element name="videoobject">
+      <ref name="videodata"/>
+    </element>
+  </define>
+  <define name="videodata">
+    <element name="videodata">
+      <empty/>
+      <ref name="attlist.videodata"/>
+    </element>
+  </define>
+  <define name="attlist.videodata">
+    <ref name="content.object-attributes"/>
+    <attribute name="format">
+      <choice>
+        <value>video/mpeg</value>
+        <value>video/mp4</value>
+        <value>video/ogg</value>
+        <value>video/quicktime</value>
+        <value>video/webm</value>
+        <value>video/x-ms-wmv</value>
+        <value>application/x-shockwave-flash</value>
+      </choice>
+    </attribute>
+  </define>
+  <define name="orderedlist">
+    <element name="orderedlist">
+      <a:documentation>Een genummerde lijst of opsomming.</a:documentation>
+      <optional>
+        <ref name="title"/>
+      </optional>
+      <oneOrMore>
+        <choice>
+          <ref name="listitem"/>
+          <ref name="lists"/>
+        </choice>
+      </oneOrMore>
+      <ref name="attlist.ordered"/>
+    </element>
+  </define>
+  <define name="itemizedlist">
+    <element name="itemizedlist">
+      <a:documentation>Een ongenummerde lijst of opsomming. Het voorloop-symbool (bullet) kan
+worden aangegeven in het attribuut "mark".</a:documentation>
+      <optional>
+        <ref name="title"/>
+      </optional>
+      <oneOrMore>
+        <choice>
+          <ref name="listitem"/>
+          <ref name="lists"/>
+        </choice>
+      </oneOrMore>
+      <ref name="attlist.itemized"/>
+    </element>
+  </define>
+  <define name="attlist.itemized">
+    <attribute name="mark">
+      <a:documentation>voorloop-symbool (bullet) voor ongenummerde lijsten kan worden aangegeven in dit attribuut.</a:documentation>
+    </attribute>
+  </define>
+  <define name="attlist.ordered">
+    <optional>
+      <attribute name="continuation">
+        <a:documentation>Nummering van een lijst begint weer bij 1, of doornummeren vorige lijst.</a:documentation>
+        <choice>
+          <value>continues</value>
+          <value>restarts</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="startingnumber">
+        <a:documentation>Indien een lijst met een willekeurig nummer begint...</a:documentation>
+        <data type="positiveInteger"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="inheritnum">
+        <a:documentation>Indien nummering 'hierarchisch' is (als in "1.2.3.") </a:documentation>
+        <choice>
+          <value>inherit</value>
+          <value>ignore</value>
+        </choice>
+      </attribute>
+    </optional>
+    <attribute name="numeration">
+      <a:documentation>Type nummering (als: "1", "A", "a", "I", "i").
+Indien de nummering exliciet wordt opgenomen in een nr-element voor een listitem dan moet
+de waarde "none" worden gekozen, anders wordt de lijst bij presentatie ook nog automatisch genummerd met het
+geselecteerde type nummering. </a:documentation>
+      <choice>
+        <value>arabic</value>
+        <a:documentation>Arabische nummering - 1. 2, 3 etc.</a:documentation>
+        <value>upperalpha</value>
+        <a:documentation>Alfabetische nummering met hoofdletters (kapitalen) - A, B, C, etc.</a:documentation>
+        <value>loweralpha</value>
+        <a:documentation>Alfabetische nummering met kleine leters - a, b, c, etc.</a:documentation>
+        <value>upperroman</value>
+        <a:documentation>Romeinse nummering met hoofdletters (kapitalen) - I, II, III, etc.</a:documentation>
+        <value>lowerroman</value>
+        <a:documentation>Romeinse nummering met kleine letters - i, ii, iii, etc.</a:documentation>
+        <value>none</value>
+        <a:documentation>Geen automatische nummering - gebruik het nr-element van de listitem voor de nummers.</a:documentation>
+      </choice>
+    </attribute>
+  </define>
+  <define name="listitem">
+    <element name="listitem">
+      <a:documentation>Een onderdeel van een lijst.
+NB. Alleen indien het een orderedlist betreft met numeration="none" dan mag het element 'nr' worden gebruikt.</a:documentation>
+      <optional>
+        <ref name="nr"/>
+      </optional>
+      <oneOrMore>
+        <choice>
+          <ref name="para"/>
+          <ref name="lists"/>
+          <ref name="blockquote"/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="title">
+    <element name="title">
+      <a:documentation>Een titel voor bv een section, table of list.</a:documentation>
+      <optional>
+        <ref name="nr"/>
+      </optional>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="content.inlines"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="quote">
+    <element name="quote">
+      <a:documentation>Een aanhaling of citaat in lopende tekst. Het is mogelijk om met attributen aan te geven wat de bron van de quote is.</a:documentation>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="content.inlines"/>
+        </choice>
+      </zeroOrMore>
+      <optional>
+        <ref name="attlist.quotes"/>
+      </optional>
+    </element>
+  </define>
+  <!--
+    Start definities voor tabellen.
+    Twee soorten tabellen zijn beschikbaar ('informaltable' is de default).
+  -->
+  <define name="informaltable">
+    <element name="informaltable">
+      <a:documentation>Een tabel zonder titel (titel verboden).
+Voor documentatie zie: http://www.docbook.org/tdg5/en/html/docbook.html</a:documentation>
+      <oneOrMore>
+        <ref name="tgroup"/>
+      </oneOrMore>
+      <ref name="attlist.table"/>
+    </element>
+  </define>
+  <define name="table">
+    <element name="table">
+      <ref name="title">
+        <a:documentation>Een tabel met een verplichte titel.
+Voor documentatie zie: http://www.docbook.org/tdg5/en/html/docbook.html.</a:documentation>
+      </ref>
+      <oneOrMore>
+        <ref name="tgroup"/>
+      </oneOrMore>
+      <ref name="attlist.table"/>
+    </element>
+  </define>
+  <define name="attlist.table">
+    <optional>
+      <ref name="align"/>
+    </optional>
+    <optional>
+      <ref name="valign"/>
+    </optional>
+    <optional>
+      <attribute name="border">
+        <choice>
+          <value>1</value>
+          <value>0</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="tgroup">
+    <element name="tgroup">
+      <zeroOrMore>
+        <ref name="colspec"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="spanspec"/>
+      </zeroOrMore>
+      <optional>
+        <ref name="thead"/>
+      </optional>
+      <optional>
+        <ref name="tfoot"/>
+      </optional>
+      <ref name="tbody"/>
+      <ref name="attlist.tgroup"/>
+    </element>
+  </define>
+  <define name="attlist.tgroup">
+    <optional>
+      <attribute name="align" a:defaultValue="left">
+        <choice>
+          <value>center</value>
+          <value>char</value>
+          <value>left</value>
+          <value>right</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="char"/>
+    </optional>
+    <optional>
+      <attribute name="charoff">
+        <data type="decimal"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="cols">
+        <data type="positiveInteger"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="colsep" a:defaultValue="0">
+        <choice>
+          <value>1</value>
+          <value>0</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="rowsep" a:defaultValue="1">
+        <choice>
+          <value>1</value>
+          <value>0</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="tgroupstyle"/>
+    </optional>
+  </define>
+  <define name="colspec">
+    <element name="colspec">
+      <empty/>
+      <ref name="attlist.colspec"/>
+    </element>
+  </define>
+  <define name="attlist.colspec">
+    <optional>
+      <attribute name="align" a:defaultValue="left">
+        <choice>
+          <value>center</value>
+          <value>char</value>
+          <value>left</value>
+          <value>right</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="char"/>
+    </optional>
+    <optional>
+      <attribute name="charoff">
+        <data type="decimal"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="colname"/>
+    </optional>
+    <optional>
+      <attribute name="colnum">
+        <data type="positiveInteger"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="colsep" a:defaultValue="0">
+        <choice>
+          <value>1</value>
+          <value>0</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="colwidth"/>
+    </optional>
+    <optional>
+      <attribute name="rowsep" a:defaultValue="1">
+        <choice>
+          <value>1</value>
+          <value>0</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="spanspec">
+    <element name="spanspec">
+      <empty/>
+      <ref name="attlist.spanspec"/>
+    </element>
+  </define>
+  <define name="attlist.spanspec">
+    <ref name="align"/>
+    <optional>
+      <attribute name="char"/>
+    </optional>
+    <optional>
+      <attribute name="charoff">
+        <data type="decimal"/>
+      </attribute>
+    </optional>
+    <ref name="colsep"/>
+    <ref name="rowsep"/>
+    <attribute name="nameend"/>
+    <attribute name="namest"/>
+    <attribute name="spanname"/>
+  </define>
+  <define name="align">
+    <optional>
+      <attribute name="align">
+        <choice>
+          <value>center</value>
+          <value>char</value>
+          <value>left</value>
+          <value>right</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="colsep">
+    <optional>
+      <attribute name="colsep">
+        <choice>
+          <value>1</value>
+          <value>0</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="thead">
+    <element name="thead">
+      <oneOrMore>
+        <ref name="row"/>
+      </oneOrMore>
+      <ref name="attlist.thead"/>
+    </element>
+  </define>
+  <define name="attlist.thead">
+    <ref name="valign"/>
+    <ref name="align"/>
+  </define>
+  <define name="tfoot">
+    <element name="tfoot">
+      <oneOrMore>
+        <ref name="row"/>
+      </oneOrMore>
+      <ref name="attlist.tfoot"/>
+    </element>
+  </define>
+  <define name="attlist.tfoot">
+    <ref name="valign"/>
+    <ref name="align"/>
+  </define>
+  <define name="tbody">
+    <element name="tbody">
+      <oneOrMore>
+        <ref name="row"/>
+      </oneOrMore>
+      <ref name="attlist.tbody"/>
+    </element>
+  </define>
+  <define name="attlist.tbody">
+    <ref name="valign"/>
+    <ref name="align"/>
+  </define>
+  <define name="row">
+    <element name="row">
+      <oneOrMore>
+        <ref name="entry"/>
+      </oneOrMore>
+      <ref name="attlist.row"/>
+    </element>
+  </define>
+  <define name="attlist.row">
+    <ref name="valign"/>
+    <ref name="rowsep"/>
+  </define>
+  <define name="valign">
+    <optional>
+      <attribute name="valign">
+        <choice>
+          <value>top</value>
+          <value>bottom</value>
+          <value>middle</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="rowsep">
+    <optional>
+      <attribute name="rowsep">
+        <choice>
+          <value>1</value>
+          <value>0</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+  <define name="entry">
+    <element name="entry">
+      <zeroOrMore>
+        <choice>
+          <ref name="para"/>
+          <ref name="mediaobject"/>
+        </choice>
+      </zeroOrMore>
+      <ref name="attlist.entry"/>
+    </element>
+  </define>
+  <define name="attlist.entry">
+    <ref name="valign"/>
+    <ref name="rowsep"/>
+    <ref name="colsep"/>
+    <ref name="align"/>
+    <optional>
+      <attribute name="char"/>
+    </optional>
+    <optional>
+      <attribute name="charoff">
+        <data type="decimal"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="morerows">
+        <data type="integer"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="rotate">
+        <choice>
+          <value>1</value>
+          <value>0</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="namest"/>
+    </optional>
+    <optional>
+      <attribute name="nameend"/>
+    </optional>
+    <optional>
+      <attribute name="colname"/>
+    </optional>
+    <optional>
+      <attribute name="spanname"/>
+    </optional>
+  </define>
+</grammar>

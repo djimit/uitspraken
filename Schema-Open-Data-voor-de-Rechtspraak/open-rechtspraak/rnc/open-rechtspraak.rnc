@@ -1,0 +1,17 @@
+namespace rs = "http://www.rechtspraak.nl/schema/rechtspraak-1.0"
+
+include "open-metadata.rnc"
+include "rechtspraak-1_0.rnc"
+{
+  nn= notAllowed
+}
+
+start |= open-rechtspraak
+
+open-rechtspraak = 
+    ## root-element voor leveringen open data.
+    element open-rechtspraak {
+        open-metadata,
+        inhoudsindicatie?,
+        ( uitspraak | conclusie )?
+}
