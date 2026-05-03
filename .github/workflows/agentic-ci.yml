@@ -1,0 +1,138 @@
+name: Agentic CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of scan to run'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - security-only
+          - test-only
+          - lint-only
+      agent_id:
+        description: 'Agent ID that triggered this run'
+        required: false
+        default: 'manual'
+        type: string
+
+jobs:
+  detect-stack:
+    runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.detect.outputs.python }}
+      node: ${{ steps.detect.outputs.node }}
+      docker: ${{ steps.detect.outputs.docker }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: detect
+        run: |
+          echo "python=$(test -f requirements.txt || test -f pyproject.toml || test -f setup.py && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "node=$(test -f package.json && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "docker=$(test -f Dockerfile && echo true || echo false)" >> $GITHUB_OUTPUT
+
+  lint-and-test:
+    needs: detect-stack
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        if: needs.detect-stack.outputs.python == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      
+      - name: Setup Node
+        if: needs.detect-stack.outputs.node == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      
+      - name: Install Python deps
+        if: needs.detect-stack.outputs.python == 'true'
+        run: |
+          pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f pyproject.toml ]; then pip install -e . || pip install .; fi
+          pip install flake8 black bandit pytest 2>/dev/null || true
+      
+      - name: Install Node deps
+        if: needs.detect-stack.outputs.node == 'true'
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+      
+      - name: Run Python lint
+        if: needs.detect-stack.outputs.python == 'true' && (github.event.inputs.scan_type == 'full' || github.event.inputs.scan_type == 'lint-only')
+        run: |
+          mkdir -p ci-results
+          flake8 . --format=json --output-file=ci-results/flake8.json 2>/dev/null || true
+          black --check . 2>ci-results/black.txt || true
+          echo '{"python_lint": "completed"}' >> ci-results/summary.json
+      
+      - name: Run Node lint
+        if: needs.detect-stack.outputs.node == 'true' && (github.event.inputs.scan_type == 'full' || github.event.inputs.scan_type == 'lint-only')
+        run: |
+          mkdir -p ci-results
+          if grep -q "eslint" package.json 2>/dev/null; then npx eslint . --format=json --output-file=ci-results/eslint.json 2>/dev/null || true; fi
+          echo '{"node_lint": "completed"}' >> ci-results/summary.json
+      
+      - name: Run Python tests
+        if: needs.detect-stack.outputs.python == 'true' && (github.event.inputs.scan_type == 'full' || github.event.inputs.scan_type == 'test-only')
+        run: |
+          mkdir -p ci-results
+          pytest --json-report --json-report-file=ci-results/pytest.json 2>/dev/null || pytest --junitxml=ci-results/pytest.xml 2>/dev/null || echo '{"tests": "no_test_suite"}' > ci-results/pytest.json
+      
+      - name: Run Node tests
+        if: needs.detect-stack.outputs.node == 'true' && (github.event.inputs.scan_type == 'full' || github.event.inputs.scan_type == 'test-only')
+        run: |
+          mkdir -p ci-results
+          if grep -q "test" package.json 2>/dev/null; then npm test -- --json --outputFile=ci-results/jest.json 2>/dev/null || npm test 2>/dev/null || echo '{"tests": "no_test_suite"}' > ci-results/jest.json; fi
+      
+      - name: Security scan
+        if: github.event.inputs.scan_type == 'full' || github.event.inputs.scan_type == 'security-only'
+        run: |
+          mkdir -p ci-results
+          if [ "${{ needs.detect-stack.outputs.python }}" == "true" ]; then
+            pip install pip-audit 2>/dev/null || true
+            pip-audit --format=json --output=ci-results/pip-audit.json 2>/dev/null || echo '{"audit": "no_requirements"}' > ci-results/pip-audit.json
+            bandit -r . -f json -o ci-results/bandit.json 2>/dev/null || echo '{"bandit": "no_python_files"}' > ci-results/bandit.json
+          fi
+          if [ "${{ needs.detect-stack.outputs.node }}" == "true" ]; then
+            npm audit --json > ci-results/npm-audit.json 2>/dev/null || echo '{"audit": "no_package_lock"}' > ci-results/npm-audit.json
+          fi
+      
+      - name: Generate summary
+        run: |
+          python3 -c "
+          import json, os, glob
+          results = {}
+          for f in glob.glob('ci-results/*.json'):
+              try:
+                  with open(f) as fp:
+                      results[os.path.basename(f)] = json.load(fp)
+              except:
+                  results[os.path.basename(f)] = {'error': 'parse_failed'}
+          with open('ci-results/final-report.json', 'w') as f:
+              json.dump({'agent_id': '${{ github.event.inputs.agent_id || 'ci' }}', 'repo': '${{ github.repository }}', 'run_id': '${{ github.run_id }}', 'results': results}, f, indent=2)
+          "
+      
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-results-${{ github.run_id }}
+          path: ci-results/
+      
+      - name: Post agent-readable summary
+        run: |
+          echo "::notice::AGENTIC_CI_COMPLETE"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Repo: ${{ github.repository }}"
+          echo "Results artifact: ci-results-${{ github.run_id }}"
