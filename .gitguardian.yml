@@ -1,0 +1,5 @@
+version: 2
+allowlist:
+  - description: "Test code with synthetic Dutch postcodes (not real PII)"
+    paths:
+      - "dashboard/src/lib/pseudo-check.ts"

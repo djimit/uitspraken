@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  dashboard:
+    name: Dashboard
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dashboard
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck --if-present
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Test
+        run: npm test --if-present
+
+      - name: Build
+        run: npm run build --if-present
+
+  importer:
+    name: Importer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install importer
+        run: python -m pip install ./importer
+
+      - name: Compile Python
+        run: python -m compileall importer
+
+      - name: Run pytest if tests exist
+        run: |
+          if find . -path '*/node_modules' -prune -o -path '*/.venv' -prune -o \( -name 'test_*.py' -o -name '*_test.py' \) -print -quit | grep -q .; then
+            python -m pip install pytest
+            python -m pytest
+          else
+            echo "No Python tests found; skipping pytest."
+          fi
+
+  security-placeholders:
+    name: Security placeholders
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check tracked runtime artifacts
+        run: |
+          if git ls-files | grep -E '(\.log|tsbuildinfo|settings\.local\.json)$'; then
+            echo "Tracked runtime/local artifacts found. Remove later with git rm --cached."
+          fi
+
+      - name: Obvious secret filename check
+        run: |
+          if git ls-files | grep -Ei '(^|/)(\.env|.*private.*key.*|id_rsa|id_ed25519)$'; then
+            echo "Potential secret file tracked."
+            exit 1
+          fi
+
+      - name: Future security scanning
+        run: |
+          echo "TODO: add dependency scanning, secret scanning, SBOM generation, and provenance checks."
