@@ -1,5 +1,7 @@
 # Copilot Instructions — Rechtspraak
 
+> See root `.github/copilot-instructions.md` for global conventions.
+
 Dutch court decisions Open Data pipeline + Next.js dashboard. Imports from data.rechtspraak.nl into SQLite + FTS5, with a read-only Next.js dashboard for analysis.
 
 ## Commands
