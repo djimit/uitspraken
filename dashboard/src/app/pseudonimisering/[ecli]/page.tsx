@@ -1,14 +1,18 @@
 import { notFound } from "next/navigation";
 import { getPseudoDecisionDetail, getDecisionBodyText } from "@/lib/pseudo-check";
 import PseudoHighlightedText from "@/components/PseudoHighlightedText";
+import { requireInternalAccess } from "@/lib/access-policy";
 
 export const revalidate = 120;
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ ecli: string }>;
 }
 
 export default async function PseudoDecisionPage({ params }: PageProps) {
+  requireInternalAccess();
+
   const { ecli: rawEcli } = await params;
   const ecli = decodeURIComponent(rawEcli);
 
