@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import {
   getDecision,
   getDecisionLegalAreas,
@@ -213,11 +214,11 @@ export default async function DecisionDetailPage({ params }: PageProps) {
       )}
 
       {/* Full text */}
-      {decision.body_text && (
+      {decision.public_body_text && (
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h2 className="text-lg font-semibold mb-3">Volledige tekst</h2>
           <div className="prose max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
-            {decision.body_text}
+            {decision.public_body_text}
           </div>
         </div>
       )}
@@ -259,6 +260,31 @@ export default async function DecisionDetailPage({ params }: PageProps) {
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Formele relaties */}
+      {(decision.replaces || decision.is_replaced_by) && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold mb-3">Formele relaties</h2>
+          <div className="space-y-2">
+            {decision.replaces && (
+              <div className="flex items-start gap-2">
+                <span className="text-sm text-slate-600 min-w-32">Vervangt:</span>
+                <Link href={`/decisions/${encodeURIComponent(decision.replaces)}`} className="text-blue-600 hover:underline">
+                  {decision.replaces}
+                </Link>
+              </div>
+            )}
+            {decision.is_replaced_by && (
+              <div className="flex items-start gap-2">
+                <span className="text-sm text-slate-600 min-w-32">Vervangen door:</span>
+                <Link href={`/decisions/${encodeURIComponent(decision.is_replaced_by)}`} className="text-blue-600 hover:underline">
+                  {decision.is_replaced_by}
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

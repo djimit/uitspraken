@@ -2,6 +2,8 @@
 data/*.db
 data/*.db-wal
 data/*.db-shm
+data/*.log
+*.log
 
 # Python
 __pycache__/
@@ -9,15 +11,23 @@ __pycache__/
 *.pyo
 .venv/
 venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
 *.egg-info/
 dist/
 build/
+coverage/
 
 # Node
 node_modules/
 .next/
+*.tsbuildinfo
 .env
 .env.local
+
+# Agent/local settings
+.claude/settings.local.json
 
 # IDE
 .vscode/

@@ -96,6 +96,21 @@ function buildWhereClause(filters: Filters, prefix = "d"): { where: string; para
   };
 }
 
+function hasDecisionColumn(columnName: string): boolean {
+  return cached(`decisionColumn:${columnName}`, () => {
+    const db = getDb();
+    const columns = db.prepare("PRAGMA table_info(decisions)").all() as { name: string }[];
+    return columns.some((column) => column.name === columnName);
+  });
+}
+
+function publicBodyTextSelect(): string {
+  if (hasDecisionColumn("body_text_anonymized")) {
+    return "COALESCE(body_text_anonymized, body_text) AS public_body_text";
+  }
+  return "body_text AS public_body_text";
+}
+
 export function getStats(filters: Filters = {}): Stats {
   return cached(cacheKey("stats", filters), () => _getStats(filters));
 }
@@ -346,7 +361,7 @@ export function getDecision(ecli: string): Decision | null {
               court_identifier, court_name, court_division, case_number, procedure_type, coverage,
               alternative_title, spatial, temporal_start, temporal_end, public_url,
               replaces, is_replaced_by, access_rights,
-              body_text, inhoudsindicatie, fetch_status
+              body_text, ${publicBodyTextSelect()}, inhoudsindicatie, fetch_status
        FROM decisions WHERE ecli = ?`
     )
     .get(ecli) as Decision | undefined;

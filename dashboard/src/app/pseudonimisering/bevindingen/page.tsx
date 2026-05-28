@@ -7,9 +7,11 @@ import {
 import PseudoSubNav from "@/components/PseudoSubNav";
 import PseudoFilters from "@/components/PseudoFilters";
 import PseudoViolationsTableEnhanced from "@/components/PseudoViolationsTableEnhanced";
+import { requireInternalAccess } from "@/lib/access-policy";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 120;
+export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 50;
 
@@ -28,6 +30,8 @@ function buildBaseUrl(filters: PseudoFilterOptions): string {
 }
 
 export default async function BevindigenPage({ searchParams }: PageProps) {
+  requireInternalAccess();
+
   const params = await searchParams;
   const page = Math.max(1, parseInt(params.page || "1", 10) || 1);
 

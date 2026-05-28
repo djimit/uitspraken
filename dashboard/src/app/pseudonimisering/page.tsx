@@ -23,9 +23,11 @@ import PseudoInconsistencies from "@/components/PseudoInconsistencies";
 import PseudoPiiTrend from "@/components/PseudoPiiTrend";
 import PseudoSeverityDonut from "@/components/PseudoSeverityDonut";
 import PseudoSubNav from "@/components/PseudoSubNav";
+import { requireInternalAccess } from "@/lib/access-policy";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 120;
+export const dynamic = "force-dynamic";
 
 const Skeleton = ({ h = "h-80" }: { h?: string }) => (
   <div className={`${h} bg-gray-100 rounded-lg animate-pulse`} />
@@ -94,6 +96,8 @@ async function PiiCourtSection() {
 // ── Page ────────────────────────────────────────────────────────────
 
 export default async function PseudonimiseringPage() {
+  requireInternalAccess();
+
   return (
     <div className="space-y-8">
       {/* Header */}

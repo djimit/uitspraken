@@ -21,6 +21,7 @@ export interface Decision {
   is_replaced_by: string | null;
   access_rights: string | null;
   body_text: string | null;
+  public_body_text: string | null;
   inhoudsindicatie: string | null;
   fetch_status: string;
 }
