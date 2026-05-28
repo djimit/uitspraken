@@ -31,6 +31,7 @@ node_modules/
 
 # IDE
 .vscode/
+!.vscode/mcp.json
 .idea/
 *.swp
 *.swo
