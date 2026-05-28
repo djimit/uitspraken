@@ -103,7 +103,7 @@ def rebuild_ii_cache(conn: sqlite3.Connection) -> None:
 
     # Compile all regexes once
     outcome_res = [(label, re.compile(pat, re.IGNORECASE), color) for label, pat, color in OUTCOME_PATTERNS]
-    law_res = [(label, re.compile(pat)) for label, pat in LAW_PATTERNS]
+    law_res = [(label, re.compile(pat, re.IGNORECASE)) for label, pat in LAW_PATTERNS]
 
     # Accumulators
     outcome_counts = Counter()

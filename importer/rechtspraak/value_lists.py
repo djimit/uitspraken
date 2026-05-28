@@ -5,6 +5,7 @@ import sqlite3
 
 import httpx
 from lxml import etree
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,22 @@ VALUE_LIST_URLS = {
     "niet_nederlandse_uitspraken": "https://data.rechtspraak.nl/Waardelijst/NietNederlandseUitspraken",
 }
 
+# Hardened XML parser: disable external entities and network access to prevent XXE
+_SAFE_PARSER = etree.XMLParser(resolve_entities=False, no_network=True, load_dtd=False)
+
+# Retry helper for transient HTTP/network failures
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=2, min=1, max=30),
+    retry=retry_if_exception_type((httpx.HTTPStatusError, httpx.TransportError, httpx.TimeoutException)),
+    reraise=True,
+)
+def _fetch_xml(url: str) -> etree._Element:
+    """Fetch a URL and parse the response as XML with retry logic."""
+    resp = httpx.get(url, follow_redirects=True, timeout=30)
+    resp.raise_for_status()
+    return etree.fromstring(resp.content, _SAFE_PARSER)
+
 
 def fetch_and_store_value_lists(conn: sqlite3.Connection) -> dict:
     """Fetch all value lists and store them in the database."""
@@ -24,8 +41,7 @@ def fetch_and_store_value_lists(conn: sqlite3.Connection) -> dict:
 
     # 1. Instanties (Dutch courts)
     logger.info("Fetching Instanties...")
-    resp = httpx.get(VALUE_LIST_URLS["instanties"], follow_redirects=True, timeout=30)
-    root = etree.fromstring(resp.content)
+    root = _fetch_xml(VALUE_LIST_URLS["instanties"])
     count = 0
     for inst in root.findall("Instantie"):
         identifier = inst.findtext("Identifier", "").strip()
@@ -46,16 +62,14 @@ def fetch_and_store_value_lists(conn: sqlite3.Connection) -> dict:
 
     # 2. Rechtsgebieden (legal areas) - hierarchical
     logger.info("Fetching Rechtsgebieden...")
-    resp = httpx.get(VALUE_LIST_URLS["rechtsgebieden"], follow_redirects=True, timeout=30)
-    root = etree.fromstring(resp.content)
+    root = _fetch_xml(VALUE_LIST_URLS["rechtsgebieden"])
     count = _parse_legal_areas(conn, root.findall("Rechtsgebied"), parent_id=None)
     stats["legal_areas"] = count
     logger.info(f"  Stored {count} legal areas")
 
     # 3. Proceduresoorten (procedure types)
     logger.info("Fetching Proceduresoorten...")
-    resp = httpx.get(VALUE_LIST_URLS["proceduresoorten"], follow_redirects=True, timeout=30)
-    root = etree.fromstring(resp.content)
+    root = _fetch_xml(VALUE_LIST_URLS["proceduresoorten"])
     count = 0
     for proc in root.findall("Proceduresoort"):
         identifier = proc.findtext("Identifier", "").strip()
@@ -71,8 +85,7 @@ def fetch_and_store_value_lists(conn: sqlite3.Connection) -> dict:
 
     # 4. FormeleRelaties (formal relations between courts/aanleg levels)
     logger.info("Fetching FormeleRelaties...")
-    resp = httpx.get(VALUE_LIST_URLS["formele_relaties"], follow_redirects=True, timeout=30)
-    root = etree.fromstring(resp.content)
+    root = _fetch_xml(VALUE_LIST_URLS["formele_relaties"])
     count = 0
     for rel in root.findall("FormeleRelatie"):
         identifier = rel.findtext("Identifier", "").strip()
@@ -104,8 +117,7 @@ def fetch_and_store_value_lists(conn: sqlite3.Connection) -> dict:
 
     # 5. InstantiesBuitenlands (foreign courts)
     logger.info("Fetching InstantiesBuitenlands...")
-    resp = httpx.get(VALUE_LIST_URLS["instanties_buitenlands"], follow_redirects=True, timeout=30)
-    root = etree.fromstring(resp.content)
+    root = _fetch_xml(VALUE_LIST_URLS["instanties_buitenlands"])
     count = 0
     for inst in root.findall("Instantie"):
         identifier = inst.findtext("Identifier", "").strip()
@@ -126,8 +138,7 @@ def fetch_and_store_value_lists(conn: sqlite3.Connection) -> dict:
 
     # 6. NietNederlandseUitspraken (non-Dutch decisions with Dutch references)
     logger.info("Fetching NietNederlandseUitspraken...")
-    resp = httpx.get(VALUE_LIST_URLS["niet_nederlandse_uitspraken"], follow_redirects=True, timeout=30)
-    root = etree.fromstring(resp.content)
+    root = _fetch_xml(VALUE_LIST_URLS["niet_nederlandse_uitspraken"])
     count = 0
     for entry in root.findall("entry"):
         ecli = (entry.findtext("id", "") or "").strip()

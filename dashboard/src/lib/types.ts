@@ -263,7 +263,6 @@ export interface LatencyBucket {
 export interface LatencyByCourt {
   court_name: string;
   avg_days: number;
-  median_days: number;
   count: number;
 }
 

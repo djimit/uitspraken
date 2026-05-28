@@ -100,7 +100,12 @@ export function getStats(filters: Filters = {}): Stats {
   return cached(cacheKey("stats", filters), () => _getStats(filters));
 }
 
-/** Try reading from the precomputed _stats_cache table (instant). */
+/** Try reading from the optional precomputed _stats_cache table (instant).
+ *
+ *  This table is NOT created by any of the standard migrations (001–005).
+ *  If present, it was populated by an external/precompute job (e.g. a cron
+ *  script that materializes basic_stats, legal_area_count, etc.).
+ *  If absent the code falls back to live SQL queries.                            */
 function _tryStatsCache(key: string): string | null {
   try {
     const db = getDb();
@@ -263,6 +268,24 @@ const VALID_SORT_COLUMNS: Record<string, string> = {
 
 const SELECT_COLS = `d.ecli, d.title, d.summary, d.decision_type, d.decision_date, d.court_name, d.procedure_type, d.inhoudsindicatie, d.alternative_title, d.case_number, d.issued_date`;
 
+/** Build a prefix-aware FTS5 query string from user input.
+ *
+ *  Wraps each term as a prefix query (e.g. "recht"*) so users get
+ *  partial-match results (recht → rechter, rechtbank, rechtsgebied …).
+ *  Strips special characters that would break FTS5 syntax.
+ */
+function buildFtsQuery(query: string): string {
+  return query
+    .trim()
+    .split(/\s+/)
+    .map((term) => {
+      const cleaned = term.replace(/["*()^~:!-]/g, "").trim();
+      return cleaned ? `${cleaned}*` : "";
+    })
+    .filter(Boolean)
+    .join(" ");
+}
+
 export function searchDecisions(
   query: string | undefined,
   filters: Filters = {},
@@ -278,12 +301,7 @@ export function searchDecisions(
   const orderClause = `ORDER BY ${orderCol} IS NULL, ${orderCol} ${orderDir}`;
 
   if (query && query.trim()) {
-    // FTS search — quote each term to avoid FTS5 syntax errors with special chars like ':'
-    const ftsQuery = query
-      .trim()
-      .split(/\s+/)
-      .map((term) => `"${term.replace(/"/g, '""')}"`)
-      .join(" ");
+    const ftsQuery = buildFtsQuery(query);
     const { where, params } = buildWhereClause(filters);
     const ftsCondition = where ? `${where} AND d.ecli IN (SELECT ecli FROM decisions_fts WHERE decisions_fts MATCH ?)` : `WHERE d.ecli IN (SELECT ecli FROM decisions_fts WHERE decisions_fts MATCH ?)`;
     const allParams = [...params, ftsQuery];
@@ -821,7 +839,6 @@ export function getLatencyByCourt(filters: Filters = {}, limit = 20): LatencyByC
   return db.prepare(`
     SELECT court_name,
       CAST(AVG(julianday(issued_date) - julianday(decision_date)) AS INT) as avg_days,
-      CAST(AVG(julianday(issued_date) - julianday(decision_date)) AS INT) as median_days,
       COUNT(*) as count
     FROM decisions d ${where}
       AND d.decision_date IS NOT NULL AND d.issued_date IS NOT NULL AND d.court_name IS NOT NULL
@@ -1023,7 +1040,7 @@ export function exportDecisions(
   const db = getDb();
 
   if (query && query.trim()) {
-    const ftsQuery = query.trim().split(/\s+/).map(t => `"${t.replace(/"/g, '""')}"`).join(" ");
+    const ftsQuery = buildFtsQuery(query);
     const { where, params } = buildWhereClause(filters);
     const ftsCondition = where
       ? `${where} AND d.ecli IN (SELECT ecli FROM decisions_fts WHERE decisions_fts MATCH ?)`
