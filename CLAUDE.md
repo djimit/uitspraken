@@ -1,3 +1,9 @@
+# ⚠️ DEPRECATED — See `.github/copilot-instructions.md`
+
+This file is kept for backward compatibility. The canonical project instructions are now in `.github/copilot-instructions.md`. Please update that file instead.
+
+---
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.

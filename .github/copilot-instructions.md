@@ -102,4 +102,11 @@ Dashboard sections: Overzicht, Tijdlijn, Instanties, Analyse, Publicatievertragi
 - `RECHTSPRAAK_DATA_DIR` — importer data directory (default: `../data/`)
 - `DATABASE_PATH` — dashboard DB path (default: `../data/rechtspraak.db`)
 
+## Browser Testing
+
+Playwright MCP is configured in `dashboard/.vscode/mcp.json`. Install first:
+```bash
+npm install -g @playwright/mcp
+```
+
 No auth on either importer or dashboard.
