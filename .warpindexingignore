@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+
+# Build output
+.next/
+out/
+dist/
+
+# Data
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+# Secrets
+.env
+.env.*
+
+# System
+.DS_Store
+
+# Logs
+*.log
+logs/
