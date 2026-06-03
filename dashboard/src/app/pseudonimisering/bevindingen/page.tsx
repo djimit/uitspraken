@@ -8,6 +8,7 @@ import PseudoSubNav from "@/components/PseudoSubNav";
 import PseudoFilters from "@/components/PseudoFilters";
 import PseudoViolationsTableEnhanced from "@/components/PseudoViolationsTableEnhanced";
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 120;
 
 const PAGE_SIZE = 50;

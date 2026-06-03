@@ -26,6 +26,7 @@ import SanctionMonitor from "@/components/forensic/SanctionMonitor";
 import WeekendAnomalies from "@/components/forensic/WeekendAnomalies";
 import Section from "@/components/Section";
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 120;
 
 const Skeleton = ({ h = "h-80" }: { h?: string }) => (

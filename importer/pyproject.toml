@@ -11,5 +11,8 @@ dependencies = [
     "tenacity>=8.2",
 ]
 
+[tool.setuptools.packages.find]
+include = ["rechtspraak*"]
+
 [project.scripts]
 rechtspraak = "rechtspraak.cli:cli"

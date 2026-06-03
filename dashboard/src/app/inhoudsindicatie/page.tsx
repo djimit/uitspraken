@@ -34,6 +34,7 @@ import IICompression from "@/components/inhoudsindicatie/IICompression";
 import IIBigrams from "@/components/inhoudsindicatie/IIBigrams";
 import IILawReferences from "@/components/inhoudsindicatie/IILawReferences";
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 60;
 
 const Skeleton = ({ h = "h-80" }: { h?: string }) => (

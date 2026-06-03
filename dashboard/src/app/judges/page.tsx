@@ -15,6 +15,7 @@ import JudgeCourtChart from "@/components/JudgeCourtChart";
 import JudgeKPICards from "@/components/JudgeKPICards";
 import FilterBar from "@/components/FilterBar";
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 60;
 
 interface PageProps {

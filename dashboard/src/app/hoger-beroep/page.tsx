@@ -19,6 +19,7 @@ import AppealGevolgBreakdown from "@/components/AppealGevolgBreakdown";
 import AppealRecentOverturned from "@/components/AppealRecentOverturned";
 import Section from "@/components/Section";
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 120;
 
 const Skeleton = ({ h = "h-80" }: { h?: string }) => (

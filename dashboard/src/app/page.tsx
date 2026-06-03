@@ -38,6 +38,7 @@ import {
 } from "@/lib/queries";
 import type { Filters } from "@/lib/queries";
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 60;
 
 const SECTIONS = [

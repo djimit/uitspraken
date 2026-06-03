@@ -3,6 +3,7 @@ import type { DecisionListItem, CourtEntry, LegalAreaEntry, ProcedureEntry } fro
 import { formatNL } from "@/lib/format";
 import ExportButton from "@/components/ExportButton";
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 60;
 
 interface PageProps {

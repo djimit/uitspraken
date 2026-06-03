@@ -2,6 +2,7 @@ import PipelineStatus from "@/components/PipelineStatus";
 import DataCompleteness from "@/components/DataCompleteness";
 import { getPipelineStats, getDataCompleteness } from "@/lib/queries";
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 10; // admin page: refresh more often
 
 export default function AdminPage() {

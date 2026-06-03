@@ -24,6 +24,7 @@ import PseudoPiiTrend from "@/components/PseudoPiiTrend";
 import PseudoSeverityDonut from "@/components/PseudoSeverityDonut";
 import PseudoSubNav from "@/components/PseudoSubNav";
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 120;
 
 const Skeleton = ({ h = "h-80" }: { h?: string }) => (

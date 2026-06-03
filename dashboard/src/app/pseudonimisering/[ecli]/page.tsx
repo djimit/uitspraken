@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getPseudoDecisionDetail, getDecisionBodyText } from "@/lib/pseudo-check";
 import PseudoHighlightedText from "@/components/PseudoHighlightedText";
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 120;
 
 interface PageProps {
