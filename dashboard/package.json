@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:public-privacy": "node scripts/check-public-privacy.mjs"
   },
   "keywords": [],
   "author": "",

@@ -106,9 +106,9 @@ function hasDecisionColumn(columnName: string): boolean {
 
 function publicBodyTextSelect(): string {
   if (hasDecisionColumn("body_text_anonymized")) {
-    return "COALESCE(body_text_anonymized, body_text) AS public_body_text";
+    return "body_text_anonymized AS public_body_text";
   }
-  return "body_text AS public_body_text";
+  return "NULL AS public_body_text";
 }
 
 export function getStats(filters: Filters = {}): Stats {
@@ -343,7 +343,7 @@ export function getDecision(ecli: string): Decision | null {
               court_identifier, court_name, court_division, case_number, procedure_type, coverage,
               alternative_title, spatial, temporal_start, temporal_end, public_url,
               replaces, is_replaced_by, access_rights,
-              body_text, ${publicBodyTextSelect()}, inhoudsindicatie, fetch_status
+              NULL AS body_text, ${publicBodyTextSelect()}, inhoudsindicatie, fetch_status
        FROM decisions WHERE ecli = ?`
     )
     .get(ecli) as Decision | undefined;
