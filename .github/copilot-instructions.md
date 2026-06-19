@@ -97,6 +97,15 @@ Dashboard sections: Overzicht, Tijdlijn, Instanties, Analyse, Publicatievertragi
 - **Filters are composable** — `queries.ts` builds dynamic `WHERE` clauses from court, legal area, date range, decision type, procedure.
 - **FTS5** — full-text search over `body_text` and `inhoudsindicatie` via `decisions_fts` virtual table.
 
+## Ponytail Simplicity Layer
+
+Ponytail is subordinate implementation guidance here: privacy, data-integrity, runtime, importer/dashboard boundary, and project instructions override Ponytail. Security/runtime/project instructions override Ponytail.
+
+- Prefer the smallest query, parser, or UI change that preserves the SQLite exchange boundary.
+- Do not add dashboard writes, new cache paths, broad migrations, or abstraction layers unless existing data flow proves the need.
+- Keep XML hardening, PII safeguards, readonly dashboard access, and verification checks even when simplifying code.
+- Mark intentional shortcuts with `ponytail:` only when the ceiling and upgrade trigger are explicit.
+
 ## Environment
 
 - `RECHTSPRAAK_DATA_DIR` — importer data directory (default: `../data/`)
