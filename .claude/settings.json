@@ -2,9 +2,9 @@
   "sandbox": {
     "network": {
       "allowedDomains": [
-        "data.rechtspraak.nl",
-        "*.rechtspraak.nl"
-      ]
+        "*"
+      ],
+      "allowLocalBinding": true
     }
   }
 }
