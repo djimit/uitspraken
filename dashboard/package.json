@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "next lint",
+    "test": "echo \"No tests\" && exit 0"
   },
   "keywords": [],
   "author": "",
@@ -30,5 +32,9 @@
   },
   "overrides": {
     "postcss": "^8.5.10"
+  },
+  "devDependencies": {
+    "eslint": "^9.25.0",
+    "eslint-config-next": "^15.3.1"
   }
 }
