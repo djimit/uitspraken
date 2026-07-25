@@ -23,6 +23,7 @@ export default function RootLayout({
             <div className="flex gap-4 overflow-x-auto text-sm">
               <NavLink href="/">Overview</NavLink>
               <NavLink href="/decisions">Beslissingen</NavLink>
+              <NavLink href="/semantisch-zoeken">Semantisch zoeken</NavLink>
               <NavLink href="/judges">Rechters</NavLink>
               <NavLink href="/inhoudsindicatie">Inhoudsindicatie</NavLink>
               <NavLink href="/hoger-beroep">Hoger Beroep</NavLink>

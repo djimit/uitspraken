@@ -1,4 +1,5 @@
 import { getDb, cached } from "./db";
+import { getSynonyms } from "./synonyms";
 import type {
   Stats,
   TimelineEntry,
@@ -59,7 +60,7 @@ function cacheKey(name: string, filters: Filters = {}, extra = ""): string {
   return `${name}:${JSON.stringify(filters)}:${extra}`;
 }
 
-function buildWhereClause(filters: Filters, prefix = "d"): { where: string; params: unknown[] } {
+export function buildWhereClause(filters: Filters, prefix = "d"): { where: string; params: unknown[] } {
   const conditions: string[] = [`${prefix}.fetch_status = 'fetched'`];
   const params: unknown[] = [];
 
@@ -301,6 +302,32 @@ function buildFtsQuery(query: string): string {
     .join(" ");
 }
 
+/** Same term-cleaning as buildFtsQuery, but each term is OR'd together with
+ *  its corpus-trained word2vec synonyms (see lib/synonyms.ts) before being
+ *  AND'd with the other query terms -- e.g. "ontslag geschil" becomes
+ *  "(ontslag* OR beeindiging* OR opzegging*) (geschil* OR conflict*)".
+ *  Only used by keywordSearchRanked for hybrid search's candidate pool --
+ *  the plain /decisions keyword search keeps using buildFtsQuery unchanged,
+ *  so this doesn't alter that page's existing behavior. */
+export function buildExpandedFtsQuery(query: string): string {
+  return query
+    .trim()
+    .split(/\s+/)
+    .map((term) => {
+      const cleaned = term.replace(/["*()^~:!-]/g, "").trim();
+      if (!cleaned) return "";
+      const variants = [cleaned, ...getSynonyms(cleaned)];
+      const parts = variants.map((v) => `${v}*`);
+      return parts.length > 1 ? `(${parts.join(" OR ")})` : parts[0];
+    })
+    .filter(Boolean)
+    // FTS5 quirk verified directly against sqlite3: implicit whitespace-AND
+    // only works between bare terms, NOT between parenthesized OR-groups --
+    // "(a* OR b*) (c* OR d*)" is a syntax error, "(a* OR b*) AND (c* OR d*)"
+    // is not. Explicit AND is required once any term expanded to a group.
+    .join(" AND ");
+}
+
 export function searchDecisions(
   query: string | undefined,
   filters: Filters = {},
@@ -351,6 +378,42 @@ export function searchDecisions(
 
     return { results, total: total.c, page, pageSize };
   }
+}
+
+export interface KeywordRankedHit {
+  ecli: string;
+  bm25_rank: number;
+  snippet: string;
+}
+
+/** Keyword candidate pool for hybrid (RRF) fusion -- ranked by bm25, not paginated
+ *  user-facing output. `searchDecisions` above stays the plain keyword-search path
+ *  for /decisions; this is a separate query shaped for the hybrid-search.ts fuser. */
+export function keywordSearchRanked(
+  query: string,
+  filters: Filters = {},
+  limit = 200,
+): KeywordRankedHit[] {
+  const db = getDb();
+  const ftsQuery = buildExpandedFtsQuery(query);
+  if (!ftsQuery) return [];
+
+  const { where, params } = buildWhereClause(filters);
+  const condition = where
+    ? `${where} AND decisions_fts.ecli = d.ecli AND decisions_fts MATCH ?`
+    : `WHERE decisions_fts.ecli = d.ecli AND decisions_fts MATCH ?`;
+
+  return db
+    .prepare(
+      `SELECT d.ecli as ecli,
+              bm25(decisions_fts) as bm25_rank,
+              snippet(decisions_fts, 3, '[', ']', '…', 12) as snippet
+       FROM decisions_fts, decisions d
+       ${condition}
+       ORDER BY bm25_rank ASC
+       LIMIT ?`
+    )
+    .all(...params, ftsQuery, limit) as KeywordRankedHit[];
 }
 
 export function getDecision(ecli: string): Decision | null {

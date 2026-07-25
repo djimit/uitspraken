@@ -75,6 +75,37 @@ export interface SearchResult {
   pageSize: number;
 }
 
+/** One fused, ranked hit from the hybrid (semantic + keyword) legal search.
+ *  Every field that fed into `final_score` is present individually -- the
+ *  transparency requirement is that nothing is folded into an opaque number
+ *  without also being independently visible. */
+export interface HybridHit {
+  ecli: string;
+  title: string | null;
+  court_name: string | null;
+  decision_date: string | null;
+  courtTier: import("./court-tiers").CourtTierInfo;
+  recencyMultiplier: number;
+  keywordRank: number | null;
+  /** FTS5 snippet when this hit had a keyword match, else the semantic
+   *  chunk's snippet as a fallback -- so every hit has display text. */
+  snippet: string | null;
+  semanticRank: number | null;
+  semanticStrength: "sterk" | "gemiddeld" | "zwak" | null;
+  rrfScore: number;
+  finalScore: number;
+}
+
+export interface HybridSearchResult {
+  hits: HybridHit[];
+  total: number;
+  page: number;
+  pageSize: number;
+  /** Set when the semantic sidecar was unreachable -- results are keyword-only,
+   *  never silently missing or shown as an opaque error page. */
+  degraded: "keyword_only" | null;
+}
+
 export interface LegalArea {
   ecli: string;
   legal_area_identifier: string;
