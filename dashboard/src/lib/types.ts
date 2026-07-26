@@ -94,6 +94,14 @@ export interface HybridHit {
   semanticStrength: "sterk" | "gemiddeld" | "zwak" | null;
   rrfScore: number;
   finalScore: number;
+  /** Procedural chain (hoger beroep/cassatie/etc, both directions) and cited
+   *  statute articles from decision_relations/decision_references -- shown,
+   *  not scored: the data records a procedural link or a citation, not a
+   *  precedent-authority count (the vast majority of relations are 1:1
+   *  appeal-to-earlier-instance links, not a "cited by many" signal), so
+   *  this deliberately isn't folded into finalScore. */
+  relatedCases: import("./queries").DirectedRelation[];
+  statuteRefs: DecisionReference[];
 }
 
 export interface HybridSearchResult {

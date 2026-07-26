@@ -290,7 +290,7 @@ const SELECT_COLS = `d.ecli, d.title, d.summary, d.decision_type, d.decision_dat
  *  partial-match results (recht → rechter, rechtbank, rechtsgebied …).
  *  Strips special characters that would break FTS5 syntax.
  */
-function buildFtsQuery(query: string): string {
+export function buildFtsQuery(query: string): string {
   return query
     .trim()
     .split(/\s+/)
@@ -465,6 +465,66 @@ export function getDecisionVindplaatsen(ecli: string): string[] {
     .prepare("SELECT vindplaats FROM decision_vindplaatsen WHERE ecli = ?")
     .all(ecli) as { vindplaats: string }[];
   return rows.map(r => r.vindplaats);
+}
+
+export interface DirectedRelation extends DecisionRelation {
+  /** "outgoing": this ecli IS the relation's own row (e.g. it's the hoger
+   *  beroep, pointing back at its earlier-instance ecli). "incoming": some
+   *  OTHER decision's row points at this ecli as ITS earlier instance --
+   *  i.e. this ecli was later appealed/cassated by that other decision.
+   *  decision_relations is only ever populated from the later decision's
+   *  side, so finding "was I appealed" requires this reverse lookup. */
+  direction: "outgoing" | "incoming";
+  /** The ecli on the other end of the relation, regardless of direction. */
+  other_ecli: string | null;
+}
+
+/** Batched version of getDecisionRelations for a whole candidate pool (avoids
+ *  N+1 queries) -- both directions, since a first-instance ruling's own row
+ *  never mentions its later appeal, only the appeal's row mentions it. */
+export function getRelationsForEclis(eclis: string[]): Map<string, DirectedRelation[]> {
+  const result = new Map<string, DirectedRelation[]>();
+  if (eclis.length === 0) return result;
+  const db = getDb();
+  const placeholders = eclis.map(() => "?").join(",");
+
+  const outgoing = db
+    .prepare(`SELECT ecli, related_ecli, relation_type, relation_aanleg, relation_gevolg, label FROM decision_relations WHERE ecli IN (${placeholders})`)
+    .all(...eclis) as (DecisionRelation & { ecli: string })[];
+  for (const rel of outgoing) {
+    const list = result.get(rel.ecli) ?? [];
+    list.push({ ...rel, direction: "outgoing", other_ecli: rel.related_ecli });
+    result.set(rel.ecli, list);
+  }
+
+  const incoming = db
+    .prepare(`SELECT ecli, related_ecli, relation_type, relation_aanleg, relation_gevolg, label FROM decision_relations WHERE related_ecli IN (${placeholders})`)
+    .all(...eclis) as (DecisionRelation & { ecli: string })[];
+  for (const rel of incoming) {
+    if (!rel.related_ecli) continue;
+    const list = result.get(rel.related_ecli) ?? [];
+    list.push({ ...rel, direction: "incoming", other_ecli: rel.ecli });
+    result.set(rel.related_ecli, list);
+  }
+
+  return result;
+}
+
+/** Batched version of getDecisionReferences for a whole candidate pool. */
+export function getReferencesForEclis(eclis: string[]): Map<string, DecisionReference[]> {
+  const result = new Map<string, DecisionReference[]>();
+  if (eclis.length === 0) return result;
+  const db = getDb();
+  const placeholders = eclis.map(() => "?").join(",");
+  const rows = db
+    .prepare(`SELECT ecli, reference_type, identifier, label FROM decision_references WHERE ecli IN (${placeholders})`)
+    .all(...eclis) as (DecisionReference & { ecli: string })[];
+  for (const ref of rows) {
+    const list = result.get(ref.ecli) ?? [];
+    list.push(ref);
+    result.set(ref.ecli, list);
+  }
+  return result;
 }
 
 export function getTopJudges(limit = 20): JudgeEntry[] {

@@ -107,8 +107,57 @@ function ResultCard({ hit, age }: { hit: HybridHit; age: string | null }) {
           </>
         )}
       </div>
+
+      {(hit.relatedCases.length > 0 || hit.statuteRefs.length > 0) && (
+        <div className="mt-3 pt-3 border-t border-gray-100 space-y-1.5">
+          {hit.relatedCases.map((rel, i) => (
+            <div key={i} className="flex items-center gap-2 text-xs text-gray-600">
+              <span className={`px-1.5 py-0.5 rounded font-medium ${
+                rel.direction === "incoming" ? "bg-indigo-100 text-indigo-700" : "bg-teal-100 text-teal-700"
+              }`}>
+                {rel.direction === "incoming" ? "later beoordeeld in" : "eerdere aanleg"}
+              </span>
+              <span className="text-gray-500">{relationTypeLabel(rel.relation_type)}</span>
+              {rel.other_ecli && (
+                <a href={`/decisions/${encodeURIComponent(rel.other_ecli)}`} className="font-mono text-blue-700 hover:underline">
+                  {rel.other_ecli}
+                </a>
+              )}
+              {rel.relation_gevolg && (
+                <span className="text-gray-400">({uriFragment(rel.relation_gevolg)})</span>
+              )}
+            </div>
+          ))}
+          {hit.statuteRefs.length > 0 && (
+            <div className="flex items-center gap-1.5 flex-wrap text-xs">
+              <span className="text-gray-400">Wetsverwijzingen:</span>
+              {hit.statuteRefs.slice(0, 6).map((ref, i) => (
+                <span key={i} className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700" title={ref.identifier || undefined}>
+                  {ref.label || ref.identifier}
+                </span>
+              ))}
+              {hit.statuteRefs.length > 6 && (
+                <span className="text-gray-400">+{hit.statuteRefs.length - 6} meer</span>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </li>
   );
+}
+
+/** relation_type is a bare URI like "http://psi.rechtspraak.nl/hogerBeroep" --
+ *  strip to the last path segment for a readable label. */
+function relationTypeLabel(uri: string | null): string {
+  if (!uri) return "onbekend";
+  return uri.split("/").pop() || uri;
+}
+
+/** relation_gevolg/relation_aanleg use a "#" fragment, e.g.
+ *  "http://psi.rechtspraak.nl/gevolg#bekrachtiging/bevestiging". */
+function uriFragment(uri: string): string {
+  return uri.split("#").pop() || uri;
 }
 
 function ageLabel(decisionDate: string | null): string | null {

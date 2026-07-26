@@ -1,5 +1,5 @@
 import { getDb } from "./db";
-import { keywordSearchRanked, buildWhereClause, searchDecisions, type Filters } from "./queries";
+import { keywordSearchRanked, buildWhereClause, searchDecisions, getRelationsForEclis, getReferencesForEclis, type Filters } from "./queries";
 import { courtAuthorityInfo } from "./court-tiers";
 import type { HybridHit, HybridSearchResult } from "./types";
 
@@ -105,6 +105,9 @@ export async function hybridSearch(
     // No query: browsing/filtering only, same semantics as /decisions --
     // there is no relevance to rank, so hits carry neutral scoring fields.
     const plain = searchDecisions(undefined, filters, page, pageSize);
+    const pageEclis = plain.results.map((d) => d.ecli);
+    const relationsByEcli = getRelationsForEclis(pageEclis);
+    const referencesByEcli = getReferencesForEclis(pageEclis);
     return {
       hits: plain.results.map((d) => ({
         ecli: d.ecli,
@@ -119,6 +122,8 @@ export async function hybridSearch(
         semanticStrength: null,
         rrfScore: 0,
         finalScore: 0,
+        relatedCases: relationsByEcli.get(d.ecli) ?? [],
+        statuteRefs: referencesByEcli.get(d.ecli) ?? [],
       })),
       total: plain.total,
       page,
@@ -178,6 +183,8 @@ export async function hybridSearch(
       semanticStrength: sRank ? semanticStrength(semanticScoreByEcli.get(ecli) ?? 0, topSemanticScore) : null,
       rrfScore,
       finalScore: rrfScore * tier.multiplier * recency,
+      relatedCases: [],
+      statuteRefs: [],
     });
   }
 
@@ -194,6 +201,16 @@ export async function hybridSearch(
   const total = fused.length;
   const start = (page - 1) * pageSize;
   const hits = fused.slice(start, start + pageSize);
+
+  // Cross-reference data only fetched for the page actually shown, not the
+  // whole 200-candidate pool -- no point enriching hits nobody sees.
+  const pageEclis = hits.map((h) => h.ecli);
+  const relationsByEcli = getRelationsForEclis(pageEclis);
+  const referencesByEcli = getReferencesForEclis(pageEclis);
+  for (const hit of hits) {
+    hit.relatedCases = relationsByEcli.get(hit.ecli) ?? [];
+    hit.statuteRefs = referencesByEcli.get(hit.ecli) ?? [];
+  }
 
   return { hits, total, page, pageSize, degraded };
 }
