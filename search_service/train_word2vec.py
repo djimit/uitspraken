@@ -98,10 +98,40 @@ def main() -> None:
     frequent_terms = sorted(model.wv.key_to_index, key=lambda w: model.wv.get_vecattr(w, "count"), reverse=True)
     frequent_terms = frequent_terms[:TOP_N_TERMS]
 
-    synonyms: dict[str, list[list[float | str]]] = {}
+    raw_synonyms: dict[str, list[tuple[str, float]]] = {}
     for term in frequent_terms:
         neighbors = model.wv.most_similar(term, topn=NEIGHBORS_PER_TERM)
-        kept = [[w, round(float(sim), 3)] for w, sim in neighbors if sim >= MIN_SIMILARITY]
+        kept = [(w, float(sim)) for w, sim in neighbors if sim >= MIN_SIMILARITY]
+        if kept:
+            raw_synonyms[term] = kept
+
+    # A word2vec neighbor is "close in the same contexts," not "means the
+    # same thing" -- verified concretely: "daad" is wanprestatie's #1
+    # neighbor (0.79) purely because "onrechtmatige daad" (tort) is
+    # frequently discussed in the same paragraphs as wanprestatie (breach of
+    # contract), a different legal concept entirely. A similarity floor
+    # doesn't catch this (it scores high). What IS catchable: discourse
+    # connectives ("echter", "bovendien"), place names, and brand/drug names
+    # that show up as a "neighbor" for many unrelated terms -- a word
+    # genuinely specific to one legal concept doesn't do that. Measured
+    # empirically: the long tail is 1-3 terms per word; words appearing for
+    # 6+ distinct terms are the discourse-filler/place-name/brand-name noise
+    # (echter: 19, eindhoven: 18, heroine: 17, audi: 16, ...). This filter
+    # removes that category; it does NOT fix the narrower "daad" case, which
+    # is a disclosed, tolerated limitation of a soft/additive recall signal
+    # (never a hard filter, always AND'd with the rest of a multi-term query).
+    MAX_DISTINCT_TERMS_PER_WORD = 6
+    neighbor_term_count: dict[str, int] = {}
+    for neighbors in raw_synonyms.values():
+        for word, _sim in neighbors:
+            neighbor_term_count[word] = neighbor_term_count.get(word, 0) + 1
+
+    synonyms: dict[str, list[list[float | str]]] = {}
+    for term, neighbors in raw_synonyms.items():
+        kept = [
+            [w, round(sim, 3)] for w, sim in neighbors
+            if neighbor_term_count[w] <= MAX_DISTINCT_TERMS_PER_WORD
+        ]
         if kept:
             synonyms[term] = kept
 
