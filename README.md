@@ -139,6 +139,22 @@ npm run dev  # http://localhost:3000
 
 ---
 
+## Search Platform Dienst
+
+API-only zoekdienst die afnemende applicaties via REST zoekfunctionaliteit biedt over expliciet geconfigureerde zoekcontexten. Gebouwd met Python 3.12 + FastAPI + OpenSearch.
+
+```bash
+cd search-platform
+uv sync --extra dev
+docker compose up -d  # OpenSearch + API + mock-IdP
+make seed             # Laad synthetische data
+make test             # 37 tests
+```
+
+Zie [search-platform/README.md](search-platform/README.md) voor volledige documentatie.
+
+---
+
 ## Projectstructuur
 
 ```
@@ -162,6 +178,17 @@ Rechtspraak/
 │   └── src/lib/
 │       ├── queries.ts            # Query-functies (leest uit cache)
 │       └── types.ts              # TypeScript interfaces
+├── search-platform/             # API-only zoekdienst (FastAPI + OpenSearch)
+│   ├── app/
+│   │   ├── api/                 # Search, admin, explain endpoints
+│   │   ├── engine/              # SearchEnginePort + OpenSearchAdapter
+│   │   ├── index/               # Context registry + templates
+│   │   ├── ingestion/           # Multi-bron pipeline + connectors
+│   │   ├── security/            # Authz (DLS/FLS) + masking
+│   │   └── observability/       # Audit logging
+│   ├── contexts/                # Zoekcontext YAML configs
+│   ├── seed/                    # Synthetische data generator
+│   └── tests/                   # 37 tests
 ├── data/
 │   └── rechtspraak.db           # SQLite database
 └── README.md

@@ -4,13 +4,14 @@ Guidance for AI agents and human reviewers working in this repository.
 
 ## Repository Overview
 
-This project has three main layers:
+This project has four main layers:
 
 1. Python importer in `importer/rechtspraak/`
 2. SQLite database in `data/rechtspraak.db`
 3. Next.js dashboard in `dashboard/src/`
+4. Search Platform API in `search-platform/app/` (FastAPI + OpenSearch)
 
-The importer owns crawling, parsing, migration, cache building, and PII remediation. The dashboard must treat SQLite as read-only and should render public-safe text where available.
+The importer owns crawling, parsing, migration, cache building, and PII remediation. The dashboard must treat SQLite as read-only and should render public-safe text where available. The Search Platform provides API-only search capabilities over configured search contexts with DLS/FLS authorization.
 
 ## Architecture Rules
 
@@ -19,6 +20,8 @@ The importer owns crawling, parsing, migration, cache building, and PII remediat
 - Keep raw data, derived caches, public-safe text, and audit-only views conceptually separate.
 - Preserve existing local changes unless the user explicitly asks to replace them.
 - Prefer small changes with explicit validation over broad rewrites.
+- Search Platform: all engine-specific calls must go through `SearchEnginePort`; never call OpenSearch directly outside `opensearch_adapter.py`.
+- Search Platform: treat `body_text` from court decisions as sensitive; never log or return raw text without FLS projection.
 
 ## Required Preflight
 

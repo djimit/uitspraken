@@ -41,9 +41,22 @@ npm run build
 npm start        # production
 ```
 
+### Search Platform (FastAPI + OpenSearch)
+```bash
+cd search-platform
+uv sync --extra dev
+docker compose up -d   # Start OpenSearch + API + mock-IdP
+make seed             # Laad synthetische data
+make test             # 37 tests
+make lint             # Ruff check
+
+# Lokaal zonder Docker (vereist lokale OpenSearch)
+uv run uvicorn app.main:app --port 8000
+```
+
 ## Architecture
 
-Three-layer pipeline with SQLite as the exchange point:
+Three-layer pipeline with SQLite as the exchange point, plus a Search Platform API:
 
 ```
 Rechtspraak Open Data API (data.rechtspraak.nl)
@@ -56,6 +69,11 @@ data/rechtspraak.db      (12.6 GB, 174K+ decisions, WAL mode)
         │ better-sqlite3 readonly
         ▼
 dashboard/src/           (Next.js App Router)
+
+search-platform/app/     (FastAPI + OpenSearch)
+        │ REST API met DLS/FLS autorisatie
+        ▼
+OpenSearch (docker-compose)
 ```
 
 ### Importer modules
@@ -85,6 +103,26 @@ dashboard/src/           (Next.js App Router)
 - `pseudo-check.ts` — PII violation detection (25K+ violations found across the corpus)
 
 Dashboard sections: Overzicht, Tijdlijn, Instanties, Analyse, Publicatievertraging, Relaties, Inhoudsindicatie, Hoger Beroep, Forensisch, Pseudonimisering, Admin/Pipeline.
+
+### Search Platform modules
+
+| File | Role |
+|------|------|
+| `app/main.py` | FastAPI app entry point |
+| `app/api/search.py` | Search endpoint with authz |
+| `app/api/admin.py` | Context CRUD + provisioning |
+| `app/api/explain.py` | Ranking transparency |
+| `app/engine/port.py` | SearchEnginePort interface |
+| `app/engine/opensearch_adapter.py` | OpenSearch implementation |
+| `app/engine/query_builder.py` | Query DSL builder (9 modes) |
+| `app/engine/semantic.py` | kNN + hybrid RRF |
+| `app/index/context_registry.py` | YAML config loader |
+| `app/index/templates.py` | Index template builder |
+| `app/ingestion/pipeline.py` | Multi-source denormalization |
+| `app/ingestion/connectors/` | Connector ABC + fs_json + mock_sql |
+| `app/security/authz.py` | DLS/FLS authorization |
+| `app/security/masking.py` | PII masking |
+| `app/observability/audit.py` | Audit logging |
 
 ## Key Details
 
