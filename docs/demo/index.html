@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rechtspraak Search Platform — Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a5a', 950: '#172554' },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .highlight { background: #fef08a; padding: 0 2px; border-radius: 2px; }
+    .fade-in { animation: fadeIn 0.3s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .code-block { background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.8rem; line-height: 1.5; }
+    .code-block .key { color: #7dd3fc; }
+    .code-block .string { color: #86efac; }
+    .code-block .number { color: #fca5a5; }
+    .code-block .null { color: #94a3b8; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <header class="bg-primary-900 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold">Rechtspraak Search Platform</h1>
+          <p class="text-primary-200 text-sm mt-1">Referentie-implementatie — API-only zoekdienst</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="px-3 py-1 bg-green-500/20 text-green-300 text-xs rounded-full border border-green-500/30">● MVP</span>
+          <a href="https://github.com/djimit/uitspraken/tree/main/search-platform" class="text-primary-200 hover:text-white text-sm">GitHub →</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex gap-1">
+        <button onclick="showSection('search')" id="nav-search" class="px-4 py-3 text-sm font-medium border-b-2 border-primary-600 text-primary-700">Zoeken</button>
+        <button onclick="showSection('contexts')" id="nav-contexts" class="px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Zoekcontexten</button>
+        <button onclick="showSection('api')" id="nav-api" class="px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">API Demo</button>
+        <button onclick="showSection('architectuur')" id="nav-architectuur" class="px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Architectuur</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 py-8">
+
+    <!-- Search Section -->
+    <section id="section-search" class="space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-gray-900">Zoeken</h2>
+        <p class="text-sm text-gray-500 mt-1">Doorzoek de index met 9 zoekmodes, filters, facets en paging.</p>
+      </div>
+
+      <div class="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-medium text-gray-600 mb-1">Zoekopdracht</label>
+            <input type="text" id="search-query" placeholder="Beschrijf waar de uitspraak over gaat..."
+              class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              value="huurcontract ontbinding">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Modus</label>
+            <select id="search-mode" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+              <option value="fulltext">Full-text</option>
+              <option value="exact">Exact</option>
+              <option value="fuzzy">Fuzzy</option>
+              <option value="wildcard">Wildcard</option>
+              <option value="operator">Operator</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Context</label>
+            <select id="search-context" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+              <option value="uitspraken-openbaar">Uitspraken Openbaar</option>
+              <option value="uitspraken-besloten">Uitspraken Besloten</option>
+              <option value="rnl-content">RNL Content</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button onclick="performSearch()" class="bg-primary-700 text-white rounded-md px-5 py-2 text-sm font-medium hover:bg-primary-800 transition-colors">
+            Zoeken
+          </button>
+          <span id="search-status" class="text-sm text-gray-500"></span>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="search-results" class="space-y-3">
+        <div class="text-center text-gray-400 py-12">
+          Klik op "Zoeken" om te demonstreren hoe de API werkt.
+        </div>
+      </div>
+    </section>
+
+    <!-- Contexts Section -->
+    <section id="section-contexts" class="hidden space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-gray-900">Zoekcontexten</h2>
+        <p class="text-sm text-gray-500 mt-1">Configureerbaren zoekcontexten met BIV-P classificatie, autorisatie en index mappings.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Openbaar -->
+        <div class="bg-white rounded-lg border border-gray-200 p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-gray-900">Uitspraken Openbaar</h3>
+            <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">standaard</span>
+          </div>
+          <p class="text-xs text-gray-500">Gepseudonimiseerde uitspraken t.b.v. algemeen publiek</p>
+          <div class="space-y-1 text-xs">
+            <div class="flex justify-between"><span class="text-gray-500">BIV-P:</span><span class="font-mono">2-2-2-2</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">DLS:</span><span class="text-green-600">Uit</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">FLS:</span><span class="text-green-600">Uit</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Bronnen:</span><span>1 (mock_sql)</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Freshness:</span><span>60m</span></div>
+          </div>
+        </div>
+
+        <!-- Besloten -->
+        <div class="bg-white rounded-lg border border-gray-200 p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-gray-900">Uitspraken Besloten</h3>
+            <span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full">beveiligde</span>
+          </div>
+          <p class="text-xs text-gray-500">Ongepseudonimiseerde uitspraken t.b.v. interne professionals</p>
+          <div class="space-y-1 text-xs">
+            <div class="flex justify-between"><span class="text-gray-500">BIV-P:</span><span class="font-mono">3-3-3-3</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">DLS:</span><span class="text-red-600">Aan (groups)</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">FLS:</span><span class="text-red-600">Aan (bsn, naw)</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Bronnen:</span><span>2 (mock_sql + fs_json)</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Freshness:</span><span>15m</span></div>
+          </div>
+        </div>
+
+        <!-- Semantisch -->
+        <div class="bg-white rounded-lg border border-gray-200 p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-gray-900">RNL Content</h3>
+            <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full">semantische</span>
+          </div>
+          <p class="text-xs text-gray-500">Semantisch zoeken met kNN + hybride ranking</p>
+          <div class="space-y-1 text-xs">
+            <div class="flex justify-between"><span class="text-gray-500">BIV-P:</span><span class="font-mono">2-2-2-2</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">kNN:</span><span class="text-purple-600">Aan (768d)</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">RRF:</span><span class="text-purple-600">Aan</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">FLS:</span><span class="text-red-600">embedding</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Freshness:</span><span>120m</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- API Demo Section -->
+    <section id="section-api" class="hidden space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-gray-900">API Demo</h2>
+        <p class="text-sm text-gray-500 mt-1">Live voorbeelden van API requests en responses.</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Request 1 -->
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
+            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-mono rounded">POST</span>
+            <span class="text-sm font-mono text-gray-700">/v1/contexts/uitspraken-openbaar/search</span>
+          </div>
+          <div class="p-4">
+            <p class="text-xs text-gray-500 mb-2">Request body:</p>
+            <div class="code-block"><span class="key">"query"</span>: <span class="string">"huurcontract ontbinding"</span>,
+<span class="key">"mode"</span>: <span class="string">"fulltext"</span>,
+<span class="key">"filters"</span>: [{<span class="key">"term"</span>: {<span class="key">"court"</span>: <span class="string">"Rechtbank Amsterdam"</span>}}],
+<span class="key">"facets"</span>: [<span class="string">"court"</span>, <span class="string">"legal_area"</span>],
+<span class="key">"page"</span>: <span class="number">1</span>, <span class="key">"size"</span>: <span class="number">10</span></div>
+            <p class="text-xs text-gray-500 mt-3 mb-2">Response:</p>
+            <div class="code-block">{
+  <span class="key">"hits"</span>: [
+    {
+      <span class="key">"id"</span>: <span class="string">"ECLI:NL:RBAMS:2020:000001"</span>,
+      <span class="key">"score"</span>: <span class="number">12.34</span>,
+      <span class="key">"source"</span>: {
+        <span class="key">"title"</span>: <span class="string">"Uitspraak inzake ontbinding huurcontract"</span>,
+        <span class="key">"court"</span>: <span class="string">"Rechtbank Amsterdam"</span>,
+        <span class="key">"source_system"</span>: <span class="string">"synthetic-seed"</span>
+      },
+      <span class="key">"highlights"</span>: {<span class="key">"body"</span>: [<span class="string">"...<span class="highlight">huurcontract</span>..."</span>]}
+    }
+  ],
+  <span class="key">"total"</span>: <span class="number">42</span>,
+  <span class="key">"took_ms"</span>: <span class="number">23</span>,
+  <span class="key">"facets"</span>: {<span class="key">"court"</span>: [{<span class="key">"Rechtbank Amsterdam"</span>: <span class="number">15</span>}, ...]}
+}</div>
+          </div>
+        </div>
+
+        <!-- Request 2 -->
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
+            <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-mono rounded">POST</span>
+            <span class="text-sm font-mono text-gray-700">/v1/contexts/uitspraken-besloten/search</span>
+            <span class="ml-auto text-xs text-gray-400">Authorization: Bearer &lt;jwt&gt;</span>
+          </div>
+          <div class="p-4">
+            <p class="text-xs text-gray-500 mb-2">JWT Token claims:</p>
+            <div class="code-block">{
+  <span class="key">"sub"</span>: <span class="string">"rechter@rechtspraak.nl"</span>,
+  <span class="key">"roles"</span>: [<span class="string">"rechter"</span>],
+  <span class="key">"groups"</span>: [<span class="string">"intern"</span>, <span class="string">"civiel"</span>]
+}</div>
+            <p class="text-xs text-gray-500 mt-3 mb-2">DLS filter (server-side toegepast):</p>
+            <div class="code-block">{<span class="key">"terms"</span>: {<span class="key">"authz_groups"</span>: [<span class="string">"intern"</span>, <span class="string">"civiel"</span>]}}</div>
+            <p class="text-xs text-gray-500 mt-3 mb-2">FLS projectie (verborgen velden):</p>
+            <div class="code-block">[<span class="string">"bsn"</span>, <span class="string">"nawgegevens"</span>] — <span class="null">// verborgen voor niet-rechter/jurist rollen</span></div>
+          </div>
+        </div>
+
+        <!-- Request 3 -->
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center gap-2">
+            <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-mono rounded">GET</span>
+            <span class="text-sm font-mono text-gray-700">/v1/contexts/{ctx}/search/explain?id=ECLI:...&query=...</span>
+          </div>
+          <div class="p-4">
+            <p class="text-xs text-gray-500 mb-2">Ranking transparantie (AS BP4):</p>
+            <div class="code-block">{
+  <span class="key">"context"</span>: <span class="string">"uitspraken-openbaar"</span>,
+  <span class="key">"document_id"</span>: <span class="string">"ECLI:NL:RBAMS:2020:000001"</span>,
+  <span class="key">"explanation"</span>: {
+    <span class="key">"value"</span>: <span class="number">12.34</span>,
+    <span class="key">"description"</span>: <span class="string">"sum of:"</span>,
+    <span class="key">"details"</span>: [
+      {<span class="key">"value"</span>: <span class="number">8.2</span>, <span class="key">"description"</span>: <span class="string">"weight(title:huurcontract in 0)"</span>},
+      {<span class="key">"value"</span>: <span class="number">4.14</span>, <span class="key">"description"</span>: <span class="string">"weight(body:ontbinding in 0)"</span>}
+    ]
+  }
+}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architectuur Section -->
+    <section id="section-architectuur" class="hidden space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-gray-900">Architectuur</h2>
+        <p class="text-sm text-gray-500 mt-1">Engine-ontkoppeling, multi-bron autorisatie en modulaire opzet.</p>
+      </div>
+
+      <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <div class="code-block">
+┌─────────────────────────────────────────────────────────────┐
+│                    Client Applications                       │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ REST API (FastAPI)
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│  API Layer    │ POST /search │ GET /explain │ Admin CRUD   │
+├───────────────┼──────────────┼──────────────┼──────────────┤
+│  Security     │ OIDC → DLS filter │ FLS projection │ Audit │
+├───────────────┴──────────────┴──────────────┴──────────────┤
+│  SearchEnginePort (interface)                                │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │ OpenSearchAdapter │ query_builder │ semantic (kNN)   │  │
+│  └──────────────────────────────────────────────────────┘  │
+├─────────────────────────────────────────────────────────────┤
+│  Index Layer  │ Context Registry │ YAML Configs │ Templates │
+├───────────────┼──────────────────┼──────────────┼───────────┤
+│  Ingestion    │ Pipeline │ Connectors (fs_json, mock_sql)  │
+└───────────────┴──────────────────┴────────────────────────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │  OpenSearch   │
+                    │  (Docker)     │
+                    └──────────────┘</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white rounded-lg border border-gray-200 p-5">
+          <h3 class="font-semibold text-gray-900 mb-3">9 Zoekmodes</h3>
+          <ul class="space-y-1 text-xs text-gray-600">
+            <li><code class="bg-gray-100 px-1 rounded">exact</code> — match_phrase op _all</li>
+            <li><code class="bg-gray-100 px-1 rounded">fulltext</code> — multi_match met boosting</li>
+            <li><code class="bg-gray-100 px-1 rounded">fuzzy</code> — fuzziness: AUTO</li>
+            <li><code class="bg-gray-100 px-1 rounded">wildcard</code> — *query* op title</li>
+            <li><code class="bg-gray-100 px-1 rounded">operator</code> — query_string AND/OR/NOT</li>
+            <li><code class="bg-gray-100 px-1 rounded">filter</code> — bool.filter wrapping</li>
+            <li><code class="bg-gray-100 px-1 rounded">sort</code> — aangepaste sortering</li>
+            <li><code class="bg-gray-100 px-1 rounded">facet</code> — terms aggregaties</li>
+            <li><code class="bg-gray-100 px-1 rounded">paging</code> — from/size</li>
+          </ul>
+        </div>
+        <div class="bg-white rounded-lg border border-gray-200 p-5">
+          <h3 class="font-semibold text-gray-900 mb-3">Beveiliging</h3>
+          <ul class="space-y-1 text-xs text-gray-600">
+            <li><strong>DLS</strong> — Document-level security via authz_groups</li>
+            <li><strong>FLS</strong> — Field-level security (bsn, nawgegevens)</li>
+            <li><strong>OIDC</strong> — JWT tokens met roles/groups claims</li>
+            <li><strong>Audit</strong> — Elke zoekopdracht gelogd</li>
+            <li><strong>Masking</strong> — PII gemaskeerd in logs</li>
+            <li><strong>Engine-ontkoppeling</strong> — Poort/adapter pattern</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-gray-200 mt-12">
+    <div class="max-w-7xl mx-auto px-4 py-6 flex items-center justify-between">
+      <p class="text-sm text-gray-500">Referentie-implementatie — MVP, niet productie-klaar</p>
+      <div class="flex items-center gap-4 text-sm text-gray-500">
+        <a href="https://github.com/djimit/uitspraken" class="hover:text-primary-600">GitHub</a>
+        <span>·</span>
+        <a href="https://opensearch.org" class="hover:text-primary-600">OpenSearch</a>
+        <span>·</span>
+        <a href="https://fastapi.tiangolo.com" class="hover:text-primary-600">FastAPI</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function showSection(name) {
+      ['search', 'contexts', 'api', 'architectuur'].forEach(s => {
+        document.getElementById('section-' + s).classList.add('hidden');
+        const nav = document.getElementById('nav-' + s);
+        nav.classList.remove('border-primary-600', 'text-primary-700');
+        nav.classList.add('border-transparent', 'text-gray-500');
+      });
+      document.getElementById('section-' + name).classList.remove('hidden');
+      const activeNav = document.getElementById('nav-' + name);
+      activeNav.classList.remove('border-transparent', 'text-gray-500');
+      activeNav.classList.add('border-primary-600', 'text-primary-700');
+    }
+
+    const demoResults = [
+      { ecli: "ECLI:NL:RBAMS:2020:004215", title: "Uitspraak inzake ontbinding huurcontract", court: "Rechtbank Amsterdam", area: "Civiel recht", date: "2020-03-15", score: 12.34, snippet: "De huurder heeft herhaaldelijk geen betaald. De rechter acht het <mark>huurcontract</mark> ontbonden." },
+      { ecli: "ECLI:NL:RBDHA:2021:008932", title: "Vordering schadevergoeding verkeersongeval", court: "Rechtbank Den Haag", area: "Civiel recht", date: "2021-07-22", score: 9.87, snippet: "Partijen worden gehoord. Beslissing: <mark>ontbinding</mark> van de schadevergoeding vordering." },
+      { ecli: "ECLI:NL:RBROT:2019:012044", title: "Bestuursrechtelijke bezwaarschrift belastingaanslag", court: "Rechtbank Rotterdam", area: "Bestuursrecht", date: "2019-11-03", score: 7.52, snippet: "Het bezwaarschrift is gegrond verklaard. De <mark>huurcontract</mark> regeling wordt herzien." },
+      { ecli: "ECLI:NL:GHAMS:2022:003421", title: "Eis tot betaling vorderingsrecht", court: "Gerechtshof Amsterdam", area: "Civiel recht", date: "2022-01-18", score: 6.11, snippet: "Het hoger beroep wordt afgewezen. Geen <mark>ontbinding</mark> van het vonnis." },
+      { ecli: "ECLI:NL:HR:2023:001056", title: "Cassatie inzake huurrecht", court: "Hoge Raad", area: "Civiel recht", date: "2023-05-09", score: 5.43, snippet: "De cassatie wordt verworpen. Het <mark>huurcontract</mark> blijft standhouden." },
+    ];
+
+    function performSearch() {
+      const query = document.getElementById('search-query').value;
+      const mode = document.getElementById('search-mode').value;
+      const context = document.getElementById('search-context').value;
+      const status = document.getElementById('search-status');
+      const results = document.getElementById('search-results');
+
+      status.textContent = 'Zoeken...';
+      results.innerHTML = '<div class="text-center text-gray-400 py-8">Laden...</div>';
+
+      setTimeout(() => {
+        status.textContent = `${demoResults.length} resultaten voor "${query}" (${mode}) — 23ms`;
+        results.innerHTML = demoResults.map((r, i) => `
+          <div class="bg-white border border-gray-200 rounded-lg p-4 hover:border-primary-300 transition-colors fade-in" style="animation-delay: ${i * 50}ms">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <a href="#" class="font-mono text-sm text-primary-700 hover:underline">${r.ecli}</a>
+                <p class="text-sm text-gray-700 mt-0.5">${r.title}</p>
+              </div>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-mono">${r.score.toFixed(2)}</span>
+            </div>
+            <p class="text-sm text-gray-600 mt-2 leading-relaxed">${r.snippet}</p>
+            <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
+              <span>${r.court}</span><span>·</span><span>${r.area}</span><span>·</span><span>${r.date}</span><span>·</span><span class="text-green-600">source: synthetic-seed</span>
+            </div>
+          </div>
+        `).join('');
+      }, 400);
+    }
+  </script>
+</body>
+</html>
