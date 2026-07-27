@@ -63,9 +63,6 @@ tests/          # Test suite
 ## Guardrails
 
 - Geen echte PII (alleen synthetische data)
-- Geen OpenShift/MRP-provisioning
-- Geen Platinum-only features
-- Geen productie-IAM (alleen mock-IdP)
 - Geen UI (API-only)
 - Engine-specifieke aanroepen alleen via `SearchEnginePort`
 
