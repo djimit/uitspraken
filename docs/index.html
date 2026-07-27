@@ -126,8 +126,6 @@
           <p class="text-xs text-gray-500">Gepseudonimiseerde uitspraken t.b.v. algemeen publiek</p>
           <div class="space-y-1 text-xs">
             <div class="flex justify-between"><span class="text-gray-500">BIV-P:</span><span class="font-mono">2-2-2-2</span></div>
-            <div class="flex justify-between"><span class="text-gray-500">DLS:</span><span class="text-green-600">Uit</span></div>
-            <div class="flex justify-between"><span class="text-gray-500">FLS:</span><span class="text-green-600">Uit</span></div>
             <div class="flex justify-between"><span class="text-gray-500">Bronnen:</span><span>1 (mock_sql)</span></div>
             <div class="flex justify-between"><span class="text-gray-500">Freshness:</span><span>60m</span></div>
           </div>
@@ -142,8 +140,6 @@
           <p class="text-xs text-gray-500">Ongepseudonimiseerde uitspraken t.b.v. interne professionals</p>
           <div class="space-y-1 text-xs">
             <div class="flex justify-between"><span class="text-gray-500">BIV-P:</span><span class="font-mono">3-3-3-3</span></div>
-            <div class="flex justify-between"><span class="text-gray-500">DLS:</span><span class="text-red-600">Aan (groups)</span></div>
-            <div class="flex justify-between"><span class="text-gray-500">FLS:</span><span class="text-red-600">Aan (bsn, naw)</span></div>
             <div class="flex justify-between"><span class="text-gray-500">Bronnen:</span><span>2 (mock_sql + fs_json)</span></div>
             <div class="flex justify-between"><span class="text-gray-500">Freshness:</span><span>15m</span></div>
           </div>
@@ -309,8 +305,6 @@
         <div class="bg-white rounded-lg border border-gray-200 p-5">
           <h3 class="font-semibold text-gray-900 mb-3">Beveiliging</h3>
           <ul class="space-y-1 text-xs text-gray-600">
-            <li><strong>DLS</strong> — Document-level security via authz_groups</li>
-            <li><strong>FLS</strong> — Field-level security (bsn, nawgegevens)</li>
             <li><strong>OIDC</strong> — JWT tokens met roles/groups claims</li>
             <li><strong>Audit</strong> — Elke zoekopdracht gelogd</li>
             <li><strong>Masking</strong> — PII gemaskeerd in logs</li>
