@@ -1,0 +1,27 @@
+name: rnl-content
+profile: semantische
+classification: { B: 2, I: 2, V: 2, P: 2 }
+purpose: "Semantisch zoeken over RNL content met kNN en hybride ranking"
+retention_days: 3650
+sources:
+  - id: rnl_docs
+    connector: fs_json
+    join_key: doc_id
+authorization:
+  dls: null
+  fls:
+    restricted_fields: [embedding]
+    allow_roles: [admin]
+synonyms: null
+freshness: { mode: scheduled, interval: "120m" }
+semantic: { enabled: true, embedding_field: "embedding", embedding_dim: 768 }
+mappings:
+  properties:
+    doc_id: { type: keyword }
+    title: { type: text, analyzer: dutch }
+    body: { type: text, analyzer: dutch }
+    embedding:
+      type: dense_vector
+      dims: 768
+      index: true
+      similarity: cosine

@@ -1,0 +1,47 @@
+services:
+  opensearch:
+    image: opensearchproject/opensearch:2.17.1
+    environment:
+      - discovery.type=single-node
+      - plugins.security.disabled=false
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Admin123!ChangeMe
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sk https://localhost:9200 -u admin:Admin123!ChangeMe || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - OPENSEARCH_URL=https://opensearch:9200
+      - OPENSEARCH_USER=admin
+      - OPENSEARCH_PASSWORD=Admin123!ChangeMe
+      - MOCK_ISSUER_URL=http://mock-idp:8081
+      - LOG_LEVEL=info
+    ports:
+      - "8000:8000"
+    depends_on:
+      opensearch:
+        condition: service_healthy
+      mock-idp:
+        condition: service_started
+
+  mock-idp:
+    build:
+      context: .
+      dockerfile: Dockerfile.idp
+    environment:
+      - JWT_SECRET=dev-secret-change-in-production
+    ports:
+      - "8081:8081"
+
+volumes:
+  opensearch-data:

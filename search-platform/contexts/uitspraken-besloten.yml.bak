@@ -1,0 +1,33 @@
+name: uitspraken-besloten
+profile: beveiligde
+classification: { B: 3, I: 3, V: 3, P: 3 }
+purpose: "Doorzoeken ongepseudonimiseerde uitspraken t.b.v. interne professionals"
+retention_days: 3650
+sources:
+  - id: uitspraken
+    connector: mock_sql
+    join_key: ecli
+  - id: vindplaatsen
+    connector: fs_json
+    join_key: ecli
+authorization:
+  dls:
+    field: authz_groups
+    claim: groups
+  fls:
+    restricted_fields: [bsn, nawgegevens]
+    allow_roles: [rechter, jurist]
+synonyms: null
+freshness: { mode: scheduled, interval: "15m" }
+semantic: { enabled: false }
+mappings:
+  properties:
+    ecli: { type: keyword }
+    title: { type: text, analyzer: dutch }
+    body: { type: text, analyzer: dutch }
+    inhoudsindicatie: { type: text, analyzer: dutch }
+    court: { type: keyword }
+    legal_area: { type: keyword }
+    decision_date: { type: date }
+    source_system: { type: keyword }
+    authz_groups: { type: keyword }
