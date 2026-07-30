@@ -5,7 +5,6 @@ import { getPipelineStats, getDataCompleteness } from "@/lib/queries";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 10; // admin page: refresh more often
-export const dynamic = "force-dynamic";
 
 export default function AdminPage() {
   requireInternalAccess();

@@ -27,7 +27,6 @@ import { requireInternalAccess } from "@/lib/access-policy";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 120;
-export const dynamic = "force-dynamic";
 
 const Skeleton = ({ h = "h-80" }: { h?: string }) => (
   <div className={`${h} bg-gray-100 rounded-lg animate-pulse`} />

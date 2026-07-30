@@ -11,7 +11,6 @@ import { requireInternalAccess } from "@/lib/access-policy";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 120;
-export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 50;
 
