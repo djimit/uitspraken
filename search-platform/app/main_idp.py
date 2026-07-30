@@ -2,7 +2,7 @@ import os
 from datetime import UTC, datetime, timedelta
 
 from fastapi import FastAPI, Form
-from jose import jwt
+import jwt
 
 app = FastAPI(title="Mock IdP")
 SECRET = os.environ.get("JWT_SECRET", "dev-secret-change-in-production")

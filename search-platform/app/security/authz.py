@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from jose import jwt
+import jwt
 
 
 @dataclass

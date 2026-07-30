@@ -1,4 +1,4 @@
-from jose import jwt
+import jwt
 
 from app.security.authz import AuthContext, apply_fls_projection, build_dls_filter, decode_token
 from app.security.masking import sanitize_query_for_log
