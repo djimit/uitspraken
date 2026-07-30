@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import "./globals.css";
 import NavLink from "@/components/NavLink";
 
@@ -17,9 +18,9 @@ export default function RootLayout({
       <body className="bg-gray-50 text-gray-900 min-h-screen">
         <nav className="bg-white border-b border-gray-200 px-6 py-4">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <a href="/" className="text-xl font-bold text-blue-900">
+            <Link href="/" className="text-xl font-bold text-blue-900">
               Rechtspraak Dashboard
-            </a>
+            </Link>
             <div className="flex gap-4 overflow-x-auto text-sm">
               <NavLink href="/">Overview</NavLink>
               <NavLink href="/decisions">Beslissingen</NavLink>

@@ -33,12 +33,12 @@ export default async function DecisionDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <a
+      <Link
         href="/decisions"
         className="text-sm text-blue-700 hover:underline inline-flex items-center gap-1"
       >
         &larr; Terug naar zoeken
-      </a>
+      </Link>
 
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-start justify-between">

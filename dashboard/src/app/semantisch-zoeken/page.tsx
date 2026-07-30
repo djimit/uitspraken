@@ -2,6 +2,7 @@ import { hybridSearch } from "@/lib/hybrid-search";
 import { getCourts, getLegalAreas, getProcedureBreakdown } from "@/lib/queries";
 import type { CourtEntry, LegalAreaEntry, ProcedureEntry, HybridHit } from "@/lib/types";
 import { formatNL } from "@/lib/format";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -218,7 +219,7 @@ export default async function SemantischZoekenPage({ searchParams }: PageProps) 
         <p className="text-sm text-gray-500 mt-1">
           Combineert trefwoordzoek (FTS5), semantisch zoeken (TurboVec) en een instantie-/recentheidsweging
           over het volledige corpus ({formatNL(195578)} uitspraken). Aanvulling op de{" "}
-          <a href="/decisions" className="underline">gewone trefwoordzoek</a>, geen vervanging.
+          <Link href="/decisions" className="underline">gewone trefwoordzoek</Link>, geen vervanging.
         </p>
         <p className="text-xs text-gray-400 mt-1">
           Dit is een retrieval-tool: het toont en rangschikt bestaande uitspraken, het genereert geen

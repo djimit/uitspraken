@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "echo \"No tests\" && exit 0"
   },
   "keywords": [],
@@ -36,6 +36,6 @@
   },
   "devDependencies": {
     "eslint": "^9.25.0",
-    "eslint-config-next": "^15.3.1"
+    "eslint-config-next": "^16.2.11"
   }
 }

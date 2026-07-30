@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getPseudoDecisionDetail, getDecisionBodyText } from "@/lib/pseudo-check";
 import PseudoHighlightedText from "@/components/PseudoHighlightedText";
 import { requireInternalAccess } from "@/lib/access-policy";
@@ -30,12 +31,12 @@ export default async function PseudoDecisionPage({ params }: PageProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <a
+        <Link
           href="/pseudonimisering"
           className="text-sm text-blue-600 hover:underline"
         >
           &larr; Terug naar overzicht
-        </a>
+        </Link>
         <h1 className="text-xl font-bold text-gray-900 mt-2 font-mono">
           {ecli}
         </h1>
