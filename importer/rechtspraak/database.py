@@ -1,5 +1,6 @@
 """SQLite database operations for the Rechtspraak importer."""
 
+import json
 import sqlite3
 from pathlib import Path
 
@@ -58,6 +59,10 @@ def upsert_decisions_from_search(conn: sqlite3.Connection, entries: list[SearchE
 
 def upsert_decision_content(conn: sqlite3.Connection, content: DecisionContent) -> None:
     """Update a decision with its full content and metadata."""
+    previous = conn.execute(
+        "SELECT fetch_status FROM decisions WHERE ecli = ?",
+        (content.ecli,),
+    ).fetchone()
     conn.execute(
         """UPDATE decisions SET
             decision_type = ?,
@@ -125,7 +130,8 @@ def upsert_decision_content(conn: sqlite3.Connection, content: DecisionContent) 
     )
 
     # Update FTS index
-    conn.execute("DELETE FROM decisions_fts WHERE ecli = ?", (content.ecli,))
+    if previous and previous["fetch_status"] == "fetched":
+        conn.execute("DELETE FROM decisions_fts WHERE ecli = ?", (content.ecli,))
     title_row = conn.execute("SELECT title, summary FROM decisions WHERE ecli = ?", (content.ecli,)).fetchone()
     if title_row:
         conn.execute(
@@ -254,3 +260,41 @@ def get_stats(conn: sqlite3.Connection) -> dict:
     pending = conn.execute("SELECT COUNT(*) as c FROM decisions WHERE fetch_status = 'pending'").fetchone()["c"]
     failed = conn.execute("SELECT COUNT(*) as c FROM decisions WHERE fetch_status = 'failed'").fetchone()["c"]
     return {"total": total, "fetched": fetched, "pending": pending, "failed": failed}
+
+
+def rebuild_dashboard_stats_cache(conn: sqlite3.Connection) -> None:
+    """Refresh the optional dashboard summary cache when it exists."""
+    if not conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='_stats_cache'"
+    ).fetchone():
+        return
+
+    basic = dict(conn.execute("""
+        SELECT (SELECT COUNT(*) FROM decisions) AS total,
+          SUM(decision_type = 'Uitspraak') AS uitspraak_count,
+          SUM(decision_type = 'Conclusie') AS conclusie_count,
+          COUNT(*) AS fetched,
+          COUNT(DISTINCT court_name) AS court_count,
+          MIN(decision_date) AS date_min,
+          MAX(decision_date) AS date_max
+        FROM decisions
+        WHERE fetch_status = 'fetched'
+    """).fetchone())
+    values = {
+        "basic_stats": json.dumps(basic),
+        "legal_area_count": str(conn.execute(
+            "SELECT COUNT(DISTINCT legal_area_name) FROM decision_legal_areas"
+        ).fetchone()[0]),
+        "judge_count": str(conn.execute(
+            "SELECT COUNT(DISTINCT name) FROM decision_contributors"
+        ).fetchone()[0]),
+        "reference_count": str(conn.execute(
+            "SELECT COUNT(*) FROM decision_references"
+        ).fetchone()[0]),
+    }
+    conn.executemany("""
+        INSERT INTO _stats_cache (key, value, updated_at)
+        VALUES (?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at
+    """, values.items())
+    conn.commit()

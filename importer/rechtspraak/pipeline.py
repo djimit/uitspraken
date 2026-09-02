@@ -14,6 +14,7 @@ from .database import (
     get_connection, init_db, upsert_decisions_from_search,
     upsert_decision_content, mark_fetch_failed, mark_no_content,
     get_pending_eclis, get_failed_eclis, save_crawl_state, get_active_crawl, get_stats,
+    rebuild_dashboard_stats_cache,
 )
 from .fetcher import fetch_batch
 from .ii_cache import rebuild_ii_cache
@@ -149,6 +150,7 @@ async def run_content_fetch(
     # Rebuild analysis caches after fetch
     logger.info("Rebuilding inhoudsindicatie analysis cache...")
     rebuild_ii_cache(conn)
+    rebuild_dashboard_stats_cache(conn)
 
     conn.close()
     pbar.close()
@@ -198,6 +200,7 @@ async def run_retry_failed(
             pbar.set_postfix(stats_total)
             conn.commit()
 
+    rebuild_dashboard_stats_cache(conn)
     conn.close()
     pbar.close()
     return stats_total
