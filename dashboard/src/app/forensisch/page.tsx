@@ -12,6 +12,7 @@ import {
   getWeekendDecisions,
   getFinancialLawRefs,
   getSanctionTrend,
+  getForensicCoverage,
 } from "@/lib/forensic-queries";
 import ForensicKPICards from "@/components/forensic/ForensicKPICards";
 import FinCrimeTrendChart from "@/components/forensic/FinCrimeTrendChart";
@@ -94,6 +95,7 @@ async function WeekendSection() {
 // ── Page ──
 
 export default async function ForensischPage() {
+  const coverage = getForensicCoverage();
   return (
     <div className="space-y-2">
       <div>
@@ -104,6 +106,11 @@ export default async function ForensischPage() {
           Analyse van financieel-strafrechtelijke patronen, economische indicatoren
           en maatschappelijke impact vanuit het perspectief van forensisch rechercheurs,
           financieel analisten en burgers.
+        </p>
+        <p className="mt-3 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          Tekstsignalen zijn bijgewerkt t/m {coverage.signalsThrough ?? "onbekend"};
+          rechters- en panelgegevens t/m {coverage.contributorsThrough ?? "onbekend"}.
+          Resultaten na deze datums zijn nog niet in die afgeleide analyses verwerkt.
         </p>
       </div>
 
@@ -163,8 +170,8 @@ export default async function ForensischPage() {
         </Suspense>
       </Section>
 
-      {/* ── Wetsartikelen ── */}
-      <Section id="ff-wetten" title="Wetsartikelen" subtitle="Meest toegepaste financieel-juridische artikelen" color="orange">
+      {/* ── Tekstsignalen ── */}
+      <Section id="ff-wetten" title="Tekstsignalen" subtitle="Trefwoorden en onderwerpen in beslissingsteksten" color="orange">
         <Suspense fallback={<Skeleton h="h-96" />}>
           <LawRefsSection />
         </Suspense>

@@ -23,10 +23,10 @@ export default function FinancialLawRefs({ data }: { data: LawReference[] }) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
       <h3 className="text-sm font-semibold text-gray-700 mb-1">
-        Meest toegepaste financieel-juridische wetsartikelen
+        Financieel-juridische tekstsignalen
       </h3>
       <p className="text-xs text-gray-400 mb-3">
-        Welke wetten en artikelen komen het vaakst voor in beslissingen?
+        Hoe vaak komen deze trefwoorden en onderwerpen voor in beslissingsteksten?
       </p>
       <div style={{ height: Math.max(250, data.length * 30) }}>
         <ResponsiveContainer width="100%" height="100%">

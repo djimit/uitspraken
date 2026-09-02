@@ -116,49 +116,40 @@ export function getStats(filters: Filters = {}): Stats {
   return cached(cacheKey("stats", filters), () => _getStats(filters));
 }
 
-/** Try reading from the optional precomputed _stats_cache table (instant).
- *
- *  This table is NOT created by any of the standard migrations (001–005).
- *  If present, it was populated by an external/precompute job (e.g. a cron
- *  script that materializes basic_stats, legal_area_count, etc.).
- *  If absent the code falls back to live SQL queries.                            */
-function _tryStatsCache(key: string): string | null {
+function tryFreshStatsCache(): Stats | null {
   try {
     const db = getDb();
-    const row = db.prepare("SELECT value FROM _stats_cache WHERE key = ?").get(key) as { value: string } | undefined;
-    return row?.value ?? null;
-  } catch { return null; }
+    const rows = db.prepare(
+      "SELECT key, value FROM _stats_cache WHERE key IN ('basic_stats', 'legal_area_count', 'judge_count', 'reference_count')"
+    ).all() as { key: string; value: string }[];
+    const values = Object.fromEntries(rows.map(row => [row.key, row.value]));
+    if (!values.basic_stats) return null;
+    const basic = JSON.parse(values.basic_stats);
+    const latest = db.prepare("SELECT COUNT(*) AS total, MAX(decision_date) AS date_max FROM decisions").get() as {
+      total: number;
+      date_max: string | null;
+    };
+    if (basic.total !== latest.total || basic.date_max !== latest.date_max) return null;
+    return {
+      ...basic,
+      legal_area_count: Number(values.legal_area_count || 0),
+      judge_count: Number(values.judge_count || 0),
+      reference_count: Number(values.reference_count || 0),
+    };
+  } catch {
+    return null;
+  }
 }
 
 function _getStats(filters: Filters): Stats {
   const db = getDb();
   const { where, params } = buildWhereClause(filters);
-  const hasFilters = params.length > 0;
 
-  // Unfiltered: read from precomputed cache (instant!)
-  if (!hasFilters) {
-    const basicRaw = _tryStatsCache("basic_stats");
-    if (basicRaw) {
-      const basic = JSON.parse(basicRaw);
-      const areaCount = parseInt(_tryStatsCache("legal_area_count") || "0");
-      const judgeCount = parseInt(_tryStatsCache("judge_count") || "0");
-      const refCount = parseInt(_tryStatsCache("reference_count") || "0");
-      return {
-        total: basic.total,
-        fetched: basic.fetched,
-        uitspraak_count: basic.uitspraak_count,
-        conclusie_count: basic.conclusie_count,
-        court_count: basic.court_count,
-        legal_area_count: areaCount,
-        judge_count: judgeCount,
-        reference_count: refCount,
-        date_min: basic.date_min,
-        date_max: basic.date_max,
-      };
-    }
+  if (params.length === 0) {
+    const cachedStats = tryFreshStatsCache();
+    if (cachedStats) return cachedStats;
   }
 
-  // Filtered: run live queries (fast with indexes for filtered subsets)
   const row = db.prepare(`
     SELECT
       COUNT(*) as total,

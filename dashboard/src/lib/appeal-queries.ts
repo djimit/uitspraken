@@ -74,7 +74,11 @@ export interface AppealGevolgDetail {
 
 // ── Queries ──────────────────────────────────────────────────────────
 
-const W = "dr.relation_gevolg IS NOT NULL";
+const APPEAL_RELATION = `
+  dr.relation_gevolg IS NOT NULL
+  AND dr.relation_type = 'http://psi.rechtspraak.nl/hogerBeroep'
+  AND dr.relation_aanleg = 'http://psi.rechtspraak.nl/eerdereAanleg'
+`;
 
 function classifyGevolg(gevolg: string): "bekrachtigd" | "vernietigd" | "overig" {
   if (gevolg.includes("bekrachtiging") || gevolg.includes("bevestiging")) return "bekrachtigd";
@@ -88,8 +92,8 @@ export function getAppealKPIs(): AppealKPIs {
     const db = getDb();
 
     const rows = db.prepare(`
-      SELECT relation_gevolg FROM decision_relations
-      WHERE relation_gevolg IS NOT NULL
+      SELECT dr.relation_gevolg FROM decision_relations dr
+      WHERE ${APPEAL_RELATION}
     `).all() as { relation_gevolg: string }[];
 
     let bekrachtigd = 0, vernietigd = 0, overig = 0;
@@ -108,7 +112,7 @@ export function getAppealKPIs(): AppealKPIs {
       FROM decision_relations dr
       JOIN decisions d1 ON dr.ecli = d1.ecli
       JOIN decisions d2 ON dr.related_ecli = d2.ecli
-      WHERE dr.relation_gevolg IS NOT NULL
+      WHERE ${APPEAL_RELATION}
         AND d1.decision_date IS NOT NULL
         AND d2.decision_date IS NOT NULL
         AND ABS(julianday(d1.decision_date) - julianday(d2.decision_date)) < 3650
@@ -135,7 +139,7 @@ export function getAppealByLegalArea(): AppealOutcomeByArea[] {
       FROM decision_relations dr
       JOIN decisions d ON dr.ecli = d.ecli
       JOIN decision_legal_areas dla ON d.ecli = dla.ecli
-      WHERE dr.relation_gevolg IS NOT NULL
+      WHERE ${APPEAL_RELATION}
     `).all() as { legal_area: string; relation_gevolg: string }[];
 
     const map: Record<string, { bekrachtigd: number; vernietigd: number; overig: number }> = {};
@@ -168,7 +172,7 @@ export function getAppealByCourt(): AppealOutcomeByCourt[] {
       SELECT d.court_name, dr.relation_gevolg
       FROM decision_relations dr
       JOIN decisions d ON dr.ecli = d.ecli
-      WHERE dr.relation_gevolg IS NOT NULL AND d.court_name IS NOT NULL
+      WHERE ${APPEAL_RELATION} AND d.court_name IS NOT NULL
     `).all() as { court_name: string; relation_gevolg: string }[];
 
     const map: Record<string, { bekrachtigd: number; vernietigd: number; overig: number }> = {};
@@ -201,7 +205,7 @@ export function getAppealTrend(): AppealTrendEntry[] {
       SELECT substr(d.decision_date, 1, 7) as month, dr.relation_gevolg
       FROM decision_relations dr
       JOIN decisions d ON dr.ecli = d.ecli
-      WHERE dr.relation_gevolg IS NOT NULL
+      WHERE ${APPEAL_RELATION}
         AND d.decision_date IS NOT NULL
       ORDER BY month
     `).all() as { month: string; relation_gevolg: string }[];
@@ -235,8 +239,7 @@ export function getAppealCourtPairs(): AppealCourtPair[] {
       FROM decision_relations dr
       JOIN decisions d1 ON dr.ecli = d1.ecli
       JOIN decisions d2 ON dr.related_ecli = d2.ecli
-      WHERE dr.relation_gevolg IS NOT NULL
-        AND dr.relation_aanleg = 'http://psi.rechtspraak.nl/eerdereAanleg'
+      WHERE ${APPEAL_RELATION}
         AND d1.court_name IS NOT NULL AND d2.court_name IS NOT NULL
     `).all() as { to_court: string; from_court: string; relation_gevolg: string }[];
 
@@ -293,8 +296,7 @@ export function getAppealDuration(): AppealDurationEntry[] {
         FROM decision_relations dr
         JOIN decisions d1 ON dr.ecli = d1.ecli
         JOIN decisions d2 ON dr.related_ecli = d2.ecli
-        WHERE dr.relation_gevolg IS NOT NULL
-          AND dr.relation_aanleg = 'http://psi.rechtspraak.nl/eerdereAanleg'
+        WHERE ${APPEAL_RELATION}
           AND d1.decision_date IS NOT NULL
           AND d2.decision_date IS NOT NULL
           AND ABS(julianday(d1.decision_date) - julianday(d2.decision_date)) > 0
@@ -313,9 +315,9 @@ export function getAppealGevolgDetails(): AppealGevolgDetail[] {
     const db = getDb();
     const rows = db.prepare(`
       SELECT relation_gevolg as gevolg_raw, COUNT(*) as count
-      FROM decision_relations
-      WHERE relation_gevolg IS NOT NULL
-      GROUP BY relation_gevolg
+      FROM decision_relations dr
+      WHERE ${APPEAL_RELATION}
+      GROUP BY dr.relation_gevolg
       ORDER BY count DESC
     `).all() as { gevolg_raw: string; count: number }[];
 
@@ -342,6 +344,8 @@ export function getRecentOverturned(limit = 20): AppealTopOverturned[] {
       JOIN decisions d ON dr.ecli = d.ecli
       LEFT JOIN decision_legal_areas dla ON d.ecli = dla.ecli
       WHERE dr.relation_gevolg LIKE '%vernietiging%'
+        AND dr.relation_type = 'http://psi.rechtspraak.nl/hogerBeroep'
+        AND dr.relation_aanleg = 'http://psi.rechtspraak.nl/eerdereAanleg'
         AND d.decision_date IS NOT NULL
       GROUP BY d.ecli
       ORDER BY d.decision_date DESC

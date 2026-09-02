@@ -93,7 +93,17 @@ export interface SanctionTrend {
 // ── Queries (use _forensic_cache for fast reads) ─────────────────────
 
 const FC = "_forensic_cache";
-const W = "body_text IS NOT NULL AND body_text != '' AND fetch_status = 'fetched'";
+
+export function getForensicCoverage(): { signalsThrough: string | null; contributorsThrough: string | null } {
+  const db = getDb();
+  return {
+    signalsThrough: (db.prepare(`SELECT MAX(decision_date) AS d FROM ${FC}`).get() as { d: string | null }).d,
+    contributorsThrough: (db.prepare(`
+      SELECT MAX(d.decision_date) AS d
+      FROM decision_contributors dc JOIN decisions d ON d.ecli = dc.ecli
+    `).get() as { d: string | null }).d,
+  };
+}
 
 /** Overall KPIs */
 export function getFinCrimeKPIs(): FinCrimeKPIs {
@@ -189,6 +199,7 @@ export function getPanelAppeal(): { entries: PanelAppealEntry[]; summary: PanelS
       JOIN panel p ON d.ecli = p.ecli
       JOIN decision_legal_areas la ON d.ecli = la.ecli
       WHERE dr.relation_gevolg IS NOT NULL
+        AND dr.relation_type = 'http://psi.rechtspraak.nl/hogerBeroep'
         AND dr.relation_aanleg = 'http://psi.rechtspraak.nl/eerdereAanleg'
       GROUP BY kamer, la.legal_area_name
       HAVING total >= 10
@@ -216,6 +227,7 @@ export function getPanelAppeal(): { entries: PanelAppealEntry[]; summary: PanelS
       JOIN decisions d ON dr.related_ecli = d.ecli
       JOIN panel p ON d.ecli = p.ecli
       WHERE dr.relation_gevolg IS NOT NULL
+        AND dr.relation_type = 'http://psi.rechtspraak.nl/hogerBeroep'
         AND dr.relation_aanleg = 'http://psi.rechtspraak.nl/eerdereAanleg'
       GROUP BY kamer
     `).all() as { kamer: string; vernietigd: number; total: number }[];
@@ -318,11 +330,10 @@ export function getWeekendDecisions(): WeekendDecision[] {
   });
 }
 
-/** Financial law references — uses pre-computed values for speed */
+/** Keyword signals in decision text — uses pre-computed values for speed */
 export function getFinancialLawRefs(): LawReference[] {
   return cachedSlow("finLawRefs", () => {
     const db = getDb();
-    // Use reference counts from decision_references + some from forensic cache
     const data: LawReference[] = [
       { law: "Art 420bis Sr (witwassen)", count: (db.prepare(`SELECT SUM(witwassen) as c FROM ${FC}`).get() as {c:number}).c },
       { law: "Faillissementswet", count: (db.prepare(`SELECT SUM(faillissement) as c FROM ${FC}`).get() as {c:number}).c },
