@@ -1,0 +1,7 @@
+{
+  "config_zone_bypass": [
+    ".swarm/evidence/",
+    "search-platform/pyproject.toml",
+    "search-platform/docker-compose.yml"
+  ]
+}
