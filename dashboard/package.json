@@ -31,10 +31,11 @@
     "typescript": "^5.9.3"
   },
   "overrides": {
-    "brace-expansion": "^1.1.21",
     "js-yaml": "^4.3.2",
     "postcss": "$postcss",
-    "sharp": "^0.35.0"
+    "sharp": "^0.35.0",
+    "brace-expansion@1": "^1.1.21",
+    "minimatch@>=7 <11.0.1": "^11.0.5"
   },
   "devDependencies": {
     "eslint": "^9.25.0",
